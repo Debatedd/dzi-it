@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm --version)",
+      "PowerShell(node --version)",
+      "PowerShell(npm --version)",
+      "Bash(npm run *)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(Select-String -Path \"C:\\\\Users\\\\Vikto\\\\Desktop\\\\IT_DZI_WB\\\\app\\\\lib\\\\questions.ts\" -Pattern \"q-215\")",
+      "Bash(Select-Object -Last 1)",
+      "Bash(python -c ' *)",
+      "Bash(python3 -c \"import pdfplumber; print\\('ok'\\)\")",
+      "PowerShell(\\(Get-Content \"C:\\\\Users\\\\Vikto\\\\Desktop\\\\IT_DZI_WB\\\\app\\\\app\\\\rewards\\\\page.tsx\" -Encoding UTF8\\) | Select-String \"fb923c|streak|a78bfa|22d3ee|7c3aed|0ea5e9\" | Select-Object LineNumber, Line)"
+    ]
+  }
+}
