@@ -40,6 +40,9 @@ export default function HomePage() {
         <Link href="/feedback" className="text-sm font-medium" style={{ color: "var(--muted)", textDecoration: "none" }}>
           💬 Обратна връзка
         </Link>
+        <Link href="/contact" className="text-sm font-medium" style={{ color: "var(--muted)", textDecoration: "none" }}>
+          👤 Контакт
+        </Link>
         <Link
           href="/practice"
           className="text-sm font-semibold px-4 py-2 rounded-xl text-white"
