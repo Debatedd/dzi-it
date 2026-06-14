@@ -31,17 +31,17 @@ export default function HomePage() {
 
       {/* ── NAV ──────────────────────────────────────────────────────── */}
       <nav
-        className="fixed top-0 left-0 right-0 z-50 flex items-center justify-end gap-4 px-5 py-3"
+        className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-5 py-3"
         style={{ background: "var(--nav-bg)", backdropFilter: "blur(12px)", borderBottom: "1px solid var(--border)" }}
       >
-        <Link href="/rewards" className="flex items-center gap-1.5 font-medium" style={{ color: "var(--muted)", textDecoration: "none", fontSize: "clamp(0.8rem, 3.5vw, 1rem)" }}>
-          <span>🏆</span><span className="hidden sm:inline">Награди</span>
+        <Link href="/rewards" className="font-medium" style={{ color: "var(--muted)", textDecoration: "none", fontSize: "clamp(0.8rem, 3.5vw, 1rem)" }}>
+          Награди
         </Link>
-        <Link href="/feedback" className="flex items-center gap-1.5 font-medium" style={{ color: "var(--muted)", textDecoration: "none", fontSize: "clamp(0.8rem, 3.5vw, 1rem)" }}>
-          <span>💬</span><span className="hidden sm:inline">Обратна връзка</span>
+        <Link href="/feedback" className="font-medium" style={{ color: "var(--muted)", textDecoration: "none", fontSize: "clamp(0.8rem, 3.5vw, 1rem)" }}>
+          Обратна връзка
         </Link>
-        <Link href="/contact" className="flex items-center gap-1.5 font-medium" style={{ color: "var(--muted)", textDecoration: "none", fontSize: "clamp(0.8rem, 3.5vw, 1rem)" }}>
-          <span>👤</span><span className="hidden sm:inline">Контакт</span>
+        <Link href="/contact" className="font-medium" style={{ color: "var(--muted)", textDecoration: "none", fontSize: "clamp(0.8rem, 3.5vw, 1rem)" }}>
+          Контакт
         </Link>
       </nav>
 
