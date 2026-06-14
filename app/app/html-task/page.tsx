@@ -138,29 +138,30 @@ const TASKS: Task[] = [
     id: "zad28-2025aug",
     title: "Задача 28 — Пътна безопасност",
     year: "ДЗИ 2025 (август)",
-    description: "Създайте информативен сайт за пътната безопасност (road.html) с четири части.",
+    description: "Създайте информативен сайт за пътната безопасност (road.html) с четири части. Използвайте вътрешен стил (внатрешен <style>) за цялата страница.",
     requirements: [
+      "Файлът да е road.html и да има 4 части (третата с 3 елемента)",
       "Страница - ширина 1000px",
       "Страница - шрифт Calibri",
-      "Страница - размер 14pt",
-      "Заглавна част - фон изображение header.jpg",
-      "Заглавна част - центрирано заглавие (h1)",
-      "Заглавна част - цвят на заглавие #EE4A49",
-      "Части 2 и 4 - фон #EE4A49",
-      "Части 2 и 4 - центриран текст",
-      "Части 2 и 4 - бял цвят на текста",
-      "Части 2 и 4 - отстояние 30px от всички страни",
-      "Трета част - три еднакво широки елемента наредени един до друг",
-      "Всеки елемент - заглавие h4",
-      "Всеки елемент - изображение",
-      "Всеки елемент - центриран текст",
-      "Всеки елемент - икона (изображение)",
-      "Всеки елемент - хипервръзка",
-      "Елементи - височина 550px",
-      "Елементи - вътрешно отстояние 10px",
-      "Фон на първи елемент - #EFC465",
-      "Фон на втори елемент - #D5D9F4",
-      "Фон на трети елемент - #BCDF95",
+      "Страница - размер на буквите 14pt",
+      "Първа част - фоново изображение header.jpg",
+      "Първа част - центрирано заглавие h1",
+      "Първа част - цвят на заглавието #EE4A49",
+      "Втора и четвърта част - фон #EE4A49",
+      "Втора и четвърта част - центриран текст",
+      "Втора и четвърта част - бял цвят на текста",
+      "Втора и четвърта част - отстояние 30px от всички страни",
+      "Трета част - три еднакво широки елемента, наредени един до друг",
+      "Всеки от трите елемента има центрирано заглавие (h4)",
+      "Всеки от трите елемента има изображение",
+      "Всеки от трите елемента има центриран текст",
+      "Всеки от трите елемента има икона (второ изображение)",
+      "Всеки от трите елемента има хипервръзка",
+      "Трите елемента - височина 550px",
+      "Трите елемента - вътрешно отстояние 10px",
+      "Първи елемент (ляво) - фон #EFC465",
+      "Втори елемент (среда) - фон #D5D9F4",
+      "Трети елемент (дясно) - фон #BCDF95",
     ],
     starter: [
       "<!DOCTYPE html>",
@@ -180,75 +181,83 @@ const TASKS: Task[] = [
     runChecks(doc, containerW) {
       const r: CheckResult[] = [];
       const dv = doc.defaultView!;
+      const req = this.requirements;
+      const cs = (el: Element) => dv.getComputedStyle(el as HTMLElement);
+
+      // ── locate the three coloured cards of part 3 first (used in several checks)
+      const THREE = ["#efc465", "#d5d9f4", "#bcdf95"];
+      const allEls = Array.from(doc.querySelectorAll("div, section, article")) as HTMLElement[];
+      const cards = allEls
+        .filter((el) => THREE.includes(normalizeColor(cs(el).backgroundColor)))
+        .sort((a, b) => a.getBoundingClientRect().left - b.getBoundingClientRect().left);
+
+      // 0. road.html + 4 parts. We can only verify structure: a page wrapper with >=4 top-level parts.
+      const wrapper = doc.querySelector("body > div, body > main, body > section") as HTMLElement | null;
+      const topChildren = Array.from((wrapper ?? doc.body).children).filter(
+        (el) => ["DIV", "SECTION", "ARTICLE", "HEADER", "FOOTER", "MAIN"].includes(el.tagName)
+      ) as HTMLElement[];
+      r.push({ label: req[0], pass: topChildren.length >= 4 || (!!wrapper && cards.length >= 3), note: `${topChildren.length} части` });
 
       // 1. Page width 1000px
-      const wrapper = doc.querySelector("body > div, body > main, body > section") as HTMLElement | null;
       const pageEl = wrapper ?? doc.body;
-      const pcs = dv.getComputedStyle(pageEl);
-      r.push({ label: this.requirements[0], pass: pxClose(pcs.width, 1000, 5), note: pcs.width });
+      r.push({ label: req[1], pass: pxClose(cs(pageEl).width, 1000, 5), note: cs(pageEl).width });
 
-      // 2-3. Font Calibri, 14pt (~18.67px)
-      const bcs = dv.getComputedStyle(doc.body);
-      r.push({ label: this.requirements[1], pass: bcs.fontFamily.toLowerCase().includes("calibri"), note: bcs.fontFamily });
-      r.push({ label: this.requirements[2], pass: pxClose(bcs.fontSize, 18.67, 2) || pxClose(bcs.fontSize, 14, 2), note: bcs.fontSize });
+      // 2-3. Font Calibri, 14pt (~18.67px) — may be set on body OR the page wrapper
+      const bcs = cs(doc.body);
+      const wcs = cs(pageEl);
+      const fontStr = (bcs.fontFamily + " " + wcs.fontFamily).toLowerCase();
+      const sizeOK = (s: CSSStyleDeclaration) => pxClose(s.fontSize, 18.67, 2) || pxClose(s.fontSize, 14, 2);
+      r.push({ label: req[2], pass: fontStr.includes("calibri"), note: wcs.fontFamily });
+      r.push({ label: req[3], pass: sizeOK(bcs) || sizeOK(wcs), note: wcs.fontSize });
 
-      // 4. Header background image contains "header"
-      const allSections = Array.from(doc.querySelectorAll("body > *, body > div > *")) as HTMLElement[];
-      const part1 = (doc.querySelector("header") as HTMLElement | null) ?? allSections[0] ?? null;
-      const p1cs = part1 ? dv.getComputedStyle(part1) : null;
-      r.push({ label: this.requirements[3], pass: !!p1cs && p1cs.backgroundImage.toLowerCase().includes("header"), note: p1cs?.backgroundImage });
+      // 4-6. Part 1: header background image, centered h1, color #EE4A49
+      const part1 = (doc.querySelector("header") as HTMLElement | null) ?? topChildren[0] ?? null;
+      const p1cs = part1 ? cs(part1) : null;
+      r.push({ label: req[4], pass: !!p1cs && p1cs.backgroundImage.toLowerCase().includes("header"), note: p1cs?.backgroundImage });
+      const h1 = (part1 ? part1.querySelector("h1") : doc.querySelector("h1")) as HTMLElement | null;
+      const h1cs = h1 ? cs(h1) : null;
+      r.push({ label: req[5], pass: !!h1cs && h1cs.textAlign === "center", note: h1cs?.textAlign });
+      r.push({ label: req[6], pass: !!h1cs && colorMatch(h1cs.color, "#ee4a49"), note: h1cs ? normalizeColor(h1cs.color) : "" });
 
-      // 5. Centered h1
-      const h1 = part1 ? part1.querySelector("h1") : doc.querySelector("h1");
-      const h1cs = h1 ? dv.getComputedStyle(h1 as HTMLElement) : null;
-      r.push({ label: this.requirements[4], pass: !!h1cs && (h1cs.textAlign === "center" || h1cs.display === "block"), note: h1cs?.textAlign });
+      // 7-10. Parts 2 & 4: bg #EE4A49, centered, white, padding 30px (need 2 such sections)
+      const redSections = (topChildren.length ? topChildren : Array.from(doc.body.children) as HTMLElement[])
+        .filter((el) => colorMatch(cs(el).backgroundColor, "#ee4a49"));
+      r.push({ label: req[7], pass: redSections.length >= 2, note: `${redSections.length} намерени` });
+      const redOK = (test: (s: CSSStyleDeclaration) => boolean) =>
+        redSections.length >= 2 && redSections.slice(0, 2).every((el) => test(cs(el)));
+      r.push({ label: req[8], pass: redOK((s) => s.textAlign === "center") });
+      r.push({ label: req[9], pass: redOK((s) => colorMatch(s.color, "#ffffff")) });
+      r.push({ label: req[10], pass: redOK((s) => pxClose(s.paddingTop, 30) && pxClose(s.paddingLeft, 30) && pxClose(s.paddingRight, 30) && pxClose(s.paddingBottom, 30)) });
 
-      // 6. h1 color #EE4A49
-      r.push({ label: this.requirements[5], pass: !!h1cs && colorMatch(h1cs.color, "#ee4a49"), note: h1cs ? normalizeColor(h1cs.color) : "" });
+      // 11. Three equal-width side-by-side cards
+      const widths = cards.map((el) => Math.round(parseFloat(cs(el).width)));
+      const equalW = cards.length >= 3 && Math.max(...widths) - Math.min(...widths) <= 4;
+      r.push({ label: req[11], pass: cards.length >= 3 && equalW, note: `${cards.length} карти, ширини: ${widths.join("/")}` });
 
-      // Find all block-level children of page (or body) for parts 2-4
-      const topChildren = Array.from((wrapper ?? doc.body).children) as HTMLElement[];
-      const redSections = topChildren.filter((el) => {
-        const cs = dv.getComputedStyle(el);
-        return colorMatch(cs.backgroundColor, "#ee4a49");
-      });
-
-      // 7-10. Parts 2 and 4: bg #EE4A49, centered, white, padding 30px
-      r.push({ label: this.requirements[6], pass: redSections.length >= 2, note: `${redSections.length} намерени` });
-      const rs0 = redSections[0] ? dv.getComputedStyle(redSections[0]) : null;
-      r.push({ label: this.requirements[7], pass: !!rs0 && rs0.textAlign === "center", note: rs0?.textAlign });
-      r.push({ label: this.requirements[8], pass: !!rs0 && colorMatch(rs0.color, "#ffffff"), note: rs0 ? normalizeColor(rs0.color) : "" });
-      r.push({ label: this.requirements[9], pass: !!rs0 && pxClose(rs0.paddingTop, 30) && pxClose(rs0.paddingLeft, 30), note: rs0 ? `pt:${rs0.paddingTop} pl:${rs0.paddingLeft}` : "" });
-
-      // 11. Three equal-width side-by-side elements in part 3
-      const allEls = Array.from(doc.querySelectorAll("div, section, article")) as HTMLElement[];
-      const col3 = allEls.filter((el) => {
-        const cs = dv.getComputedStyle(el);
-        const w = parseFloat(cs.width);
-        return w > 100 && w < 450 && pxClose(cs.height, 550, 10);
-      });
-      r.push({ label: this.requirements[10], pass: col3.length >= 3, note: `${col3.length} намерени` });
-
-      // 12-16. Each element: h4, img, centered text, icon img, link
-      const col3Sorted = col3.slice(0, 3);
-      r.push({ label: this.requirements[11], pass: col3Sorted.some((el) => el.querySelector("h4")) });
-      r.push({ label: this.requirements[12], pass: col3Sorted.some((el) => el.querySelectorAll("img").length >= 1) });
-      r.push({ label: this.requirements[13], pass: col3Sorted.some((el) => {
-        const p = el.querySelector("p, span");
-        return !!p && (dv.getComputedStyle(p as HTMLElement).textAlign === "center" || (el.querySelector("p") && dv.getComputedStyle(el).textAlign === "center"));
+      // 12-16. Each of the three cards: centered h4, image, centered text, icon (2nd img), link
+      const three = cards.slice(0, 3);
+      const everyCard = (test: (el: HTMLElement) => boolean) => three.length === 3 && three.every(test);
+      r.push({ label: req[12], pass: everyCard((el) => {
+        const h = el.querySelector("h4") as HTMLElement | null;
+        return !!h && cs(h).textAlign === "center";
       }) });
-      r.push({ label: this.requirements[14], pass: col3Sorted.some((el) => el.querySelectorAll("img").length >= 2) });
-      r.push({ label: this.requirements[15], pass: col3Sorted.some((el) => el.querySelector("a")) });
+      r.push({ label: req[13], pass: everyCard((el) => el.querySelectorAll("img").length >= 1) });
+      r.push({ label: req[14], pass: everyCard((el) => {
+        const p = el.querySelector("p") as HTMLElement | null;
+        return !!p && (cs(p).textAlign === "center" || cs(el).textAlign === "center");
+      }) });
+      r.push({ label: req[15], pass: everyCard((el) => el.querySelectorAll("img").length >= 2) });
+      r.push({ label: req[16], pass: everyCard((el) => !!el.querySelector("a")) });
 
-      // 17-18. Height 550px, padding 10px
-      r.push({ label: this.requirements[16], pass: col3.length >= 3 });
-      r.push({ label: this.requirements[17], pass: col3.length >= 1 && pxClose(dv.getComputedStyle(col3[0]).paddingTop, 10), note: col3[0] ? dv.getComputedStyle(col3[0]).paddingTop : "" });
+      // 17-18. Height 550px, padding 10px (all three)
+      r.push({ label: req[17], pass: everyCard((el) => pxClose(cs(el).height, 550, 4)), note: three.map((el) => cs(el).height).join("/") });
+      r.push({ label: req[18], pass: everyCard((el) => pxClose(cs(el).paddingTop, 10) && pxClose(cs(el).paddingLeft, 10)), note: three.map((el) => cs(el).paddingTop).join("/") });
 
-      // 19-21. Background colors
-      const bgColors = col3Sorted.map((el) => normalizeColor(dv.getComputedStyle(el).backgroundColor));
-      r.push({ label: this.requirements[18], pass: bgColors[0] === "#efc465", note: bgColors[0] });
-      r.push({ label: this.requirements[19], pass: bgColors[1] === "#d5d9f4", note: bgColors[1] });
-      r.push({ label: this.requirements[20], pass: bgColors[2] === "#bcdf95", note: bgColors[2] });
+      // 19-21. Background colours in left-to-right order
+      const bg = three.map((el) => normalizeColor(cs(el).backgroundColor));
+      r.push({ label: req[19], pass: bg[0] === "#efc465", note: bg[0] });
+      r.push({ label: req[20], pass: bg[1] === "#d5d9f4", note: bg[1] });
+      r.push({ label: req[21], pass: bg[2] === "#bcdf95", note: bg[2] });
 
       return r;
     },
