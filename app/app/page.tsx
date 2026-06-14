@@ -31,16 +31,16 @@ export default function HomePage() {
 
       {/* ── NAV ──────────────────────────────────────────────────────── */}
       <nav
-        className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-5 py-3"
+        className="fixed top-0 left-0 right-0 z-50 flex items-center px-5 py-3 justify-between sm:justify-end sm:gap-6"
         style={{ background: "var(--nav-bg)", backdropFilter: "blur(12px)", borderBottom: "1px solid var(--border)" }}
       >
-        <Link href="/rewards" className="font-medium" style={{ color: "var(--muted)", textDecoration: "none", fontSize: "clamp(0.8rem, 3.5vw, 1rem)" }}>
+        <Link href="/rewards" className="text-sm font-medium" style={{ color: "var(--muted)", textDecoration: "none" }}>
           Награди
         </Link>
-        <Link href="/feedback" className="font-medium" style={{ color: "var(--muted)", textDecoration: "none", fontSize: "clamp(0.8rem, 3.5vw, 1rem)" }}>
+        <Link href="/feedback" className="text-sm font-medium" style={{ color: "var(--muted)", textDecoration: "none" }}>
           Обратна връзка
         </Link>
-        <Link href="/contact" className="font-medium" style={{ color: "var(--muted)", textDecoration: "none", fontSize: "clamp(0.8rem, 3.5vw, 1rem)" }}>
+        <Link href="/contact" className="text-sm font-medium" style={{ color: "var(--muted)", textDecoration: "none" }}>
           Контакт
         </Link>
       </nav>
