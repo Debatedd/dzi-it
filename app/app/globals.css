@@ -73,11 +73,17 @@
   --color-accent-2: var(--accent-2);
 }
 
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  background: var(--bg);
+  min-height: 100%;
+}
 
 body {
+  /* background-attachment: fixed breaks on iOS Safari — use pseudo-element instead */
   background: radial-gradient(ellipse 120% 80% at 50% -10%, #1e2a5e 0%, var(--bg) 55%);
-  background-attachment: fixed;
+  background-color: var(--bg);
+  min-height: 100dvh;
   color: var(--text);
   overflow-x: hidden;
 }
