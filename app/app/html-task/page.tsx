@@ -40,7 +40,115 @@ const TASKS: Task[] = [
     id: "zad28",
     title: "Задача 28",
     year: "ДЗИ 2026",
-    description: "Създайте уеб страница за информационна кампания с HTML и CSS.",
+    description: "Създайте уеб страница за информационна кампания за рециклиране с HTML и CSS. Използвайте вътрешен стил (вътрешен <style>) за цялата страница.",
+    brief: (() => {
+      const box: React.CSSProperties = {
+        border: "1px solid var(--muted)",
+        borderRadius: 4,
+        textAlign: "center",
+        fontSize: "0.68rem",
+        color: "var(--muted)",
+        padding: "6px 4px",
+        background: "rgba(255,255,255,0.03)",
+      };
+      return (
+        <>
+          <p style={{ marginBottom: 12 }}>
+            <b>Задача 28.</b> Създайте уеб страница за информационна кампания за рециклиране като
+            използвате изображенията и текста от ресурсните файлове. Страницата да бъде със следната
+            структура:
+          </p>
+
+          {/* ── Wireframe на структурата ── */}
+          <div
+            style={{
+              maxWidth: 380,
+              margin: "0 auto 16px",
+              display: "flex",
+              flexDirection: "column",
+              gap: 6,
+              padding: 12,
+              border: "1px dashed var(--border)",
+              borderRadius: 10,
+            }}
+          >
+            <div style={{ ...box, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <span>🖼 лого</span>
+              <span>Блок 2 (header) &mdash; навигация</span>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
+              <div style={box}>Блок 3<br />заглавие + текст</div>
+              <div style={box}>Блок 4<br />🖼 + заглавие</div>
+            </div>
+            <div style={{ ...box, padding: "8px 4px" }}>
+              Блок 5 &mdash; заглавие и текст
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 4, marginTop: 6 }}>
+                {[6, 7, 8, 9].map((n) => (
+                  <div key={n} style={{ ...box, fontSize: "0.6rem" }}>{n}<br />🖼</div>
+                ))}
+              </div>
+            </div>
+            <div style={box}>Блок 10 (footer)</div>
+            <div style={{ textAlign: "center", fontSize: "0.62rem", color: "var(--muted)" }}>
+              всичко е в Блок 1 (ширина 80%)
+            </div>
+          </div>
+
+          <p style={{ marginBottom: 12, fontStyle: "italic" }}>
+            За стилизиране използвайте вътрешен стил за цялата страница. Използвайте актуални
+            стандарти при структурирането на кода.
+          </p>
+
+          <ol style={{ listStyle: "decimal", paddingLeft: 22, display: "flex", flexDirection: "column", gap: 10 }}>
+            <li>Заглавие в браузъра: <b>Рециклиране</b>.</li>
+            <li>
+              <b>Блок 1</b> съдържа всички останали елементи и е с:
+              <ul style={{ listStyle: "disc", paddingLeft: 20, marginTop: 4 }}>
+                <li>ширина 80%</li>
+                <li>шрифт Georgia</li>
+              </ul>
+            </li>
+            <li>
+              <b>Блок 2</b> (заглавна част / header):
+              <ul style={{ listStyle: "disc", paddingLeft: 20, marginTop: 4 }}>
+                <li>височина 90 px, фон <b>#2E7D32</b>, вътрешни отстояния 20 px</li>
+                <li>вляво лого <b>logo.png</b> с ширина 8%</li>
+                <li>вдясно навигация с минимум 2 линка, вертикално центрирана</li>
+                <li>линковете: цвят <b>#ffffff</b>, размер 20 px, без подчертаване, отстояние между думите 10 px, margin отгоре/отдолу 30 px</li>
+              </ul>
+            </li>
+            <li>
+              <b>Блокове 3 и 4</b> са наредени един до друг, всеки с ширина 50%, височина 400 px, фон <b>#1B5E20</b>:
+              <ul style={{ listStyle: "disc", paddingLeft: 20, marginTop: 4 }}>
+                <li>Блок 3: заглавие и два параграфа</li>
+                <li>Блок 4: изображение <b>blue_green_yellow.png</b> (ширина 50%) и заглавие</li>
+              </ul>
+            </li>
+            <li>
+              <b>Блок 5</b> е с височина 500 px и фон <b>#e8f5e9</b>. Съдържа заглавие, текст и четири
+              еднакви блока (6, 7, 8, 9), наредени един до друг.
+            </li>
+            <li>
+              <b>Блокове 6, 7, 8 и 9</b> са с ширина 25%, височина 400 px и фон <b>#e8f5e9</b>. Всеки съдържа:
+              <ul style={{ listStyle: "disc", paddingLeft: 20, marginTop: 4 }}>
+                <li>изображение с ширина 50%</li>
+                <li>заглавие</li>
+                <li>списък (само в блок 6)</li>
+                <li>текст с цвят <b>#1B5E20</b>, размер 15 px, курсив (italic)</li>
+              </ul>
+            </li>
+            <li>
+              <b>Блок 10</b> (footer) е с височина 50 px и фон <b>#1B5E20</b>. Текстът е центриран,
+              бял, 16 px, с отстояние отгоре 20 px.
+            </li>
+            <li>
+              Текстът <b>„Европейска агенция по околна среда"</b> е хипервръзка към{" "}
+              https://www.eea.europa.eu/bg
+            </li>
+          </ol>
+        </>
+      );
+    })(),
     requirements: [
       "Заглавие в браузъра - Рециклиране",
       "Блок 1 - ширина 80%, шрифт Georgia",
