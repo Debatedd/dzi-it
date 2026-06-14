@@ -16,6 +16,7 @@ interface Task {
   description: string;
   requirements: string[];
   brief?: ReactNode;
+  images?: { photo: string; box: string; icon: string };
   starter: string;
   runChecks: (doc: Document, containerW: number) => CheckResult[];
 }
@@ -149,6 +150,11 @@ const TASKS: Task[] = [
         </>
       );
     })(),
+    images: {
+      photo: "https://picsum.photos/seed/recycle/400/300",
+      box: "https://placehold.co/400x300/2E7D32/white?text=Рециклиране",
+      icon: "https://api.dicebear.com/9.x/icons/svg?seed=recycle",
+    },
     requirements: [
       "Заглавие в браузъра - Рециклиране",
       "Блок 1 - ширина 80%, шрифт Georgia",
@@ -351,6 +357,11 @@ const TASKS: Task[] = [
         </>
       );
     })(),
+    images: {
+      photo: "https://picsum.photos/seed/road/400/300",
+      box: "https://placehold.co/400x300/EE4A49/white?text=Безопасност",
+      icon: "https://api.dicebear.com/9.x/icons/svg?seed=road",
+    },
     requirements: [
       "Файлът да е road.html и да има 4 части (третата с 3 елемента)",
       "Страница - ширина 1000px",
@@ -603,21 +614,28 @@ function TaskEditor({ task, onBack }: { task: Task; onBack: () => void }) {
                   <code style={{ background: "var(--input-bg)", padding: "1px 5px", borderRadius: 4 }}>&lt;img src="..."&gt;</code>{" "}
                   или като <code style={{ background: "var(--input-bg)", padding: "1px 5px", borderRadius: 4 }}>background-image: url('...')</code>:
                 </p>
-                <ul className="space-y-1.5" style={{ color: "var(--muted)" }}>
-                  <li>
-                    <b>Снимка:</b>{" "}
-                    <code style={{ background: "var(--input-bg)", padding: "1px 5px", borderRadius: 4, color: "var(--accent-2-text)" }}>https://picsum.photos/400/300</code>{" "}
-                    (различни размери — сменяш числата)
-                  </li>
-                  <li>
-                    <b>Цветна кутия:</b>{" "}
-                    <code style={{ background: "var(--input-bg)", padding: "1px 5px", borderRadius: 4, color: "var(--accent-2-text)" }}>https://placehold.co/400x300/2E7D32/white?text=Лого</code>
-                  </li>
-                  <li>
-                    <b>Икона:</b>{" "}
-                    <code style={{ background: "var(--input-bg)", padding: "1px 5px", borderRadius: 4, color: "var(--accent-2-text)" }}>https://api.dicebear.com/9.x/icons/svg?seed=eco</code>
-                  </li>
-                </ul>
+                {(() => {
+                  const img = task.images ?? {
+                    photo: "https://picsum.photos/400/300",
+                    box: "https://placehold.co/400x300/2E7D32/white?text=Лого",
+                    icon: "https://api.dicebear.com/9.x/icons/svg?seed=eco",
+                  };
+                  const codeStyle = { background: "var(--input-bg)", padding: "1px 5px", borderRadius: 4, color: "var(--accent-2-text)", wordBreak: "break-all" as const };
+                  return (
+                    <ul className="space-y-1.5" style={{ color: "var(--muted)" }}>
+                      <li>
+                        <b>Снимка:</b> <code style={codeStyle}>{img.photo}</code>{" "}
+                        (различни размери — сменяш числата)
+                      </li>
+                      <li>
+                        <b>Цветна кутия:</b> <code style={codeStyle}>{img.box}</code>
+                      </li>
+                      <li>
+                        <b>Икона:</b> <code style={codeStyle}>{img.icon}</code>
+                      </li>
+                    </ul>
+                  );
+                })()}
               </div>
               <p className="mt-4 pt-4 text-xs" style={{ color: "var(--muted)", borderTop: "1px solid var(--border)" }}>
                 Източник: ДЗИ &mdash; публично достъпни изпитни материали на{" "}
