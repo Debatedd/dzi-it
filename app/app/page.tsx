@@ -96,13 +96,13 @@ export default function HomePage() {
             <span>Започни практика</span>
             <span className="transition-transform group-hover:translate-x-1">→</span>
           </Link>
-          <a
-            href="#topics"
+          <Link
+            href="/html-task"
             className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-2xl font-semibold glass"
             style={{ fontSize: "1rem", color: "var(--text)" }}
           >
-            Разгледай темите
-          </a>
+            Започни теория
+          </Link>
         </div>
 
         {/* Stats row */}
