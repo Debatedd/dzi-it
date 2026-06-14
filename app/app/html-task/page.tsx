@@ -352,14 +352,9 @@ function TaskEditor({ task, onBack }: { task: Task; onBack: () => void }) {
               <h2 className="font-bold text-lg mb-2" style={{ color: "var(--accent)" }}>{task.title}</h2>
               <p className="mb-4 text-sm" style={{ color: "var(--muted)" }}>{task.description}</p>
               <ol className="space-y-2 text-sm list-decimal list-inside" style={{ color: "var(--text)" }}>
-                <li><b>Заглавие в браузъра</b> &mdash; &bdquo;Рециклиране&ldquo;</li>
-                <li><b>Блок 1</b> &mdash; ширина 80%, шрифт Georgia, съдържа всички останали елементи</li>
-                <li><b>Блок 2 (header)</b> &mdash; височина 90px, фон #2E7D32, padding 20px. Лого (logo.png) вляво, ширина 8%. Навигация вдясно, вертикално центрирана: цвят #ffffff, без подчертаване, размер 20px, word-spacing 10px, margin top/bottom 30px.</li>
-                <li><b>Блокове 3 и 4</b> &mdash; наредени един до друг, ширина 50%, височина 400px, фон #1B5E20. Блок 3: заглавие + 2 параграфа. Блок 4: изображение (blue_green_yellow.png, ширина 50%) + заглавие.</li>
-                <li><b>Блок 5</b> &mdash; височина 500px, фон #e8f5e9. Заглавие, текст и четири еднакви блока (6-9) наредени един до друг.</li>
-                <li><b>Блокове 6, 7, 8, 9</b> &mdash; ширина 25%, височина 400px, фон #e8f5e9. Изображение (ширина 50%), заглавие, списък (само блок 6), текст (цвят #1B5E20, 15px, italic).</li>
-                <li><b>Блок 10 (footer)</b> &mdash; височина 50px, фон #1B5E20. Текст: центриран, бял, 16px, padding-top 20px.</li>
-                <li>Текстът &bdquo;Европейска агенция по околна среда&ldquo; е хипервръзка към https://www.eea.europa.eu/bg</li>
+                {task.requirements.map((req, i) => (
+                  <li key={i}>{req}</li>
+                ))}
               </ol>
             </div>
 
