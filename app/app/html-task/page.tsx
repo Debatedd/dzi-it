@@ -397,6 +397,20 @@ function TaskList({ onSelect }: { onSelect: (t: Task) => void }) {
             </button>
           ))}
         </div>
+
+        <p className="mt-10 text-xs leading-relaxed" style={{ color: "var(--muted)" }}>
+          Това е неофициална, безплатна платформа за подготовка и не е свързана с МОН.
+          Изпитните задачи са от публично достъпните материали за ДЗИ на{" "}
+          <a
+            href="https://www.mon.bg/dejnosti/matura/"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: "var(--accent)", textDecoration: "underline" }}
+          >
+            Министерството на образованието и науката
+          </a>
+          .
+        </p>
       </div>
     </main>
   );
@@ -475,6 +489,13 @@ function TaskEditor({ task, onBack }: { task: Task; onBack: () => void }) {
                   </ol>
                 </>
               )}
+              <p className="mt-5 pt-4 text-xs" style={{ color: "var(--muted)", borderTop: "1px solid var(--border)" }}>
+                Източник: ДЗИ &mdash; публично достъпни изпитни материали на{" "}
+                <a href="https://www.mon.bg/dejnosti/matura/" target="_blank" rel="noopener noreferrer" style={{ color: "var(--accent)", textDecoration: "underline" }}>
+                  МОН
+                </a>
+                . Платформата е неофициална.
+              </p>
             </div>
 
             {results && (
