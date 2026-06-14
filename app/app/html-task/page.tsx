@@ -134,6 +134,125 @@ const TASKS: Task[] = [
       return r;
     },
   },
+  {
+    id: "zad28-2025aug",
+    title: "Задача 28",
+    year: "ДЗИ 2025 (август)",
+    description: "Създайте информативен сайт за пътната безопасност (road.html) с четири части.",
+    requirements: [
+      "Страница - ширина 1000px",
+      "Страница - шрифт Calibri",
+      "Страница - размер 14pt",
+      "Заглавна част - фон изображение header.jpg",
+      "Заглавна част - центрирано заглавие (h1)",
+      "Заглавна част - цвят на заглавие #EE4A49",
+      "Части 2 и 4 - фон #EE4A49",
+      "Части 2 и 4 - центриран текст",
+      "Части 2 и 4 - бял цвят на текста",
+      "Части 2 и 4 - отстояние 30px от всички страни",
+      "Трета част - три еднакво широки елемента наредени един до друг",
+      "Всеки елемент - заглавие h4",
+      "Всеки елемент - изображение",
+      "Всеки елемент - центриран текст",
+      "Всеки елемент - икона (изображение)",
+      "Всеки елемент - хипервръзка",
+      "Елементи - височина 550px",
+      "Елементи - вътрешно отстояние 10px",
+      "Фон на първи елемент - #EFC465",
+      "Фон на втори елемент - #D5D9F4",
+      "Фон на трети елемент - #BCDF95",
+    ],
+    starter: [
+      "<!DOCTYPE html>",
+      '<html lang="bg">',
+      "<head>",
+      '  <meta charset="UTF-8">',
+      "  <title>Пътна безопасност</title>",
+      "  <style>",
+      "    /* CSS тук */",
+      "  </style>",
+      "</head>",
+      "<body>",
+      "  <!-- Четири части -->",
+      "</body>",
+      "</html>",
+    ].join("\n"),
+    runChecks(doc, containerW) {
+      const r: CheckResult[] = [];
+      const dv = doc.defaultView!;
+
+      // 1. Page width 1000px
+      const wrapper = doc.querySelector("body > div, body > main, body > section") as HTMLElement | null;
+      const pageEl = wrapper ?? doc.body;
+      const pcs = dv.getComputedStyle(pageEl);
+      r.push({ label: this.requirements[0], pass: pxClose(pcs.width, 1000, 5), note: pcs.width });
+
+      // 2-3. Font Calibri, 14pt (~18.67px)
+      const bcs = dv.getComputedStyle(doc.body);
+      r.push({ label: this.requirements[1], pass: bcs.fontFamily.toLowerCase().includes("calibri"), note: bcs.fontFamily });
+      r.push({ label: this.requirements[2], pass: pxClose(parseFloat(bcs.fontSize), 18.67, 2) || pxClose(parseFloat(bcs.fontSize), 14, 2), note: bcs.fontSize });
+
+      // 4. Header background image contains "header"
+      const allSections = Array.from(doc.querySelectorAll("body > *, body > div > *")) as HTMLElement[];
+      const part1 = (doc.querySelector("header") as HTMLElement | null) ?? allSections[0] ?? null;
+      const p1cs = part1 ? dv.getComputedStyle(part1) : null;
+      r.push({ label: this.requirements[3], pass: !!p1cs && p1cs.backgroundImage.toLowerCase().includes("header"), note: p1cs?.backgroundImage });
+
+      // 5. Centered h1
+      const h1 = part1 ? part1.querySelector("h1") : doc.querySelector("h1");
+      const h1cs = h1 ? dv.getComputedStyle(h1 as HTMLElement) : null;
+      r.push({ label: this.requirements[4], pass: !!h1cs && (h1cs.textAlign === "center" || h1cs.display === "block"), note: h1cs?.textAlign });
+
+      // 6. h1 color #EE4A49
+      r.push({ label: this.requirements[5], pass: !!h1cs && colorMatch(h1cs.color, "#ee4a49"), note: h1cs ? normalizeColor(h1cs.color) : "" });
+
+      // Find all block-level children of page (or body) for parts 2-4
+      const topChildren = Array.from((wrapper ?? doc.body).children) as HTMLElement[];
+      const redSections = topChildren.filter((el) => {
+        const cs = dv.getComputedStyle(el);
+        return colorMatch(cs.backgroundColor, "#ee4a49");
+      });
+
+      // 7-10. Parts 2 and 4: bg #EE4A49, centered, white, padding 30px
+      r.push({ label: this.requirements[6], pass: redSections.length >= 2, note: `${redSections.length} намерени` });
+      const rs0 = redSections[0] ? dv.getComputedStyle(redSections[0]) : null;
+      r.push({ label: this.requirements[7], pass: !!rs0 && rs0.textAlign === "center", note: rs0?.textAlign });
+      r.push({ label: this.requirements[8], pass: !!rs0 && colorMatch(rs0.color, "#ffffff"), note: rs0 ? normalizeColor(rs0.color) : "" });
+      r.push({ label: this.requirements[9], pass: !!rs0 && pxClose(rs0.paddingTop, 30) && pxClose(rs0.paddingLeft, 30), note: rs0 ? `pt:${rs0.paddingTop} pl:${rs0.paddingLeft}` : "" });
+
+      // 11. Three equal-width side-by-side elements in part 3
+      const allEls = Array.from(doc.querySelectorAll("div, section, article")) as HTMLElement[];
+      const col3 = allEls.filter((el) => {
+        const cs = dv.getComputedStyle(el);
+        const w = parseFloat(cs.width);
+        return w > 100 && w < 450 && pxClose(cs.height, 550, 10);
+      });
+      r.push({ label: this.requirements[10], pass: col3.length >= 3, note: `${col3.length} намерени` });
+
+      // 12-16. Each element: h4, img, centered text, icon img, link
+      const col3Sorted = col3.slice(0, 3);
+      r.push({ label: this.requirements[11], pass: col3Sorted.some((el) => el.querySelector("h4")) });
+      r.push({ label: this.requirements[12], pass: col3Sorted.some((el) => el.querySelectorAll("img").length >= 1) });
+      r.push({ label: this.requirements[13], pass: col3Sorted.some((el) => {
+        const p = el.querySelector("p, span");
+        return !!p && (dv.getComputedStyle(p as HTMLElement).textAlign === "center" || (el.querySelector("p") && dv.getComputedStyle(el).textAlign === "center"));
+      }) });
+      r.push({ label: this.requirements[14], pass: col3Sorted.some((el) => el.querySelectorAll("img").length >= 2) });
+      r.push({ label: this.requirements[15], pass: col3Sorted.some((el) => el.querySelector("a")) });
+
+      // 17-18. Height 550px, padding 10px
+      r.push({ label: this.requirements[16], pass: col3.length >= 3 });
+      r.push({ label: this.requirements[17], pass: col3.length >= 1 && pxClose(dv.getComputedStyle(col3[0]).paddingTop, 10), note: col3[0] ? dv.getComputedStyle(col3[0]).paddingTop : "" });
+
+      // 19-21. Background colors
+      const bgColors = col3Sorted.map((el) => normalizeColor(dv.getComputedStyle(el).backgroundColor));
+      r.push({ label: this.requirements[18], pass: bgColors[0] === "#efc465", note: bgColors[0] });
+      r.push({ label: this.requirements[19], pass: bgColors[1] === "#d5d9f4", note: bgColors[1] });
+      r.push({ label: this.requirements[20], pass: bgColors[2] === "#bcdf95", note: bgColors[2] });
+
+      return r;
+    },
+  },
 ];
 
 // ── task list screen ──────────────────────────────────────────────────────────
