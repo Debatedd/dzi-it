@@ -155,7 +155,7 @@ const TASKS: Task[] = [
       "Header (Блок 2) - височина 90px",
       "Header - фон #2E7D32",
       "Header - вътрешни отстояния 20px",
-      "Лого изображение (logo.png) в header-а",
+      "Лого изображение в header-а (всяко изображение)",
       "Навигация - минимум 2 линка",
       "Навигация - цвят на линкове #ffffff",
       "Навигация - размер на шрифт 20px",
@@ -164,7 +164,7 @@ const TASKS: Task[] = [
       "Блокове 3 и 4 - ширина 50%",
       "Блокове 3 и 4 - височина 400px",
       "Блокове 3 и 4 - фон #1B5E20",
-      "Изображение blue_green_yellow.png",
+      "Изображение в зелените блокове (всяко изображение)",
       "4 еднакви блока (6,7,8,9) - ширина 25%",
       "Блокове 6-9 - височина 400px",
       "Блокове 6-9 - фон #e8f5e9",
@@ -206,7 +206,7 @@ const TASKS: Task[] = [
       r.push({ label: req[2], pass: !!hcs && pxClose(hcs.height, 90), note: hcs?.height });
       r.push({ label: req[3], pass: !!hcs && colorMatch(hcs.backgroundColor, "#2e7d32"), note: hcs ? normalizeColor(hcs.backgroundColor) : "" });
       r.push({ label: req[4], pass: !!hcs && pxClose(hcs.paddingTop, 20) && pxClose(hcs.paddingLeft, 20) });
-      r.push({ label: req[5], pass: !!doc.querySelector('img[src*="logo"]') });
+      r.push({ label: req[5], pass: !!(header && header.querySelector("img")) || !!doc.querySelector('img[src*="logo"]') });
 
       const navLinks = doc.querySelectorAll("nav a");
       r.push({ label: req[6], pass: navLinks.length >= 2, note: `${navLinks.length} линка` });
@@ -225,7 +225,7 @@ const TASKS: Task[] = [
       r.push({ label: req[11], pass: greenBig.length >= 2, note: `${greenBig.length} намерени` });
       r.push({ label: req[12], pass: greenBig.length >= 2 });
       r.push({ label: req[13], pass: greenBig.length >= 2 });
-      r.push({ label: req[14], pass: !!doc.querySelector('img[src*="blue_green_yellow"]') });
+      r.push({ label: req[14], pass: greenBig.some((el) => !!el.querySelector("img")) || !!doc.querySelector('img[src*="blue_green_yellow"]') });
 
       const lightGreen = allEls.filter((el) => {
         const cs = dv.getComputedStyle(el);
@@ -356,7 +356,7 @@ const TASKS: Task[] = [
       "Страница - ширина 1000px",
       "Страница - шрифт Calibri",
       "Страница - размер на буквите 14pt",
-      "Първа част - фоново изображение header.jpg",
+      "Първа част - фоново изображение (всяко изображение)",
       "Първа част - центрирано заглавие h1",
       "Първа част - цвят на заглавието #EE4A49",
       "Втора и четвърта част - фон #EE4A49",
@@ -425,7 +425,7 @@ const TASKS: Task[] = [
       // 4-6. Part 1: header background image, centered h1, color #EE4A49
       const part1 = (doc.querySelector("header") as HTMLElement | null) ?? topChildren[0] ?? null;
       const p1cs = part1 ? cs(part1) : null;
-      r.push({ label: req[4], pass: !!p1cs && p1cs.backgroundImage.toLowerCase().includes("header"), note: p1cs?.backgroundImage });
+      r.push({ label: req[4], pass: !!p1cs && p1cs.backgroundImage !== "none" && p1cs.backgroundImage.includes("url"), note: p1cs?.backgroundImage });
       const h1 = (part1 ? part1.querySelector("h1") : doc.querySelector("h1")) as HTMLElement | null;
       const h1cs = h1 ? cs(h1) : null;
       r.push({ label: req[5], pass: !!h1cs && h1cs.textAlign === "center", note: h1cs?.textAlign });
@@ -546,7 +546,6 @@ function TaskEditor({ task, onBack }: { task: Task; onBack: () => void }) {
   }
 
   function handlePreview() {
-    if (iframeRef.current) iframeRef.current.srcdoc = code;
     setTab("preview");
   }
 
@@ -597,7 +596,30 @@ function TaskEditor({ task, onBack }: { task: Task; onBack: () => void }) {
                   </ol>
                 </>
               )}
-              <p className="mt-5 pt-4 text-xs" style={{ color: "var(--muted)", borderTop: "1px solid var(--border)" }}>
+              <div className="mt-5 pt-4 text-xs" style={{ color: "var(--text)", borderTop: "1px solid var(--border)" }}>
+                <p className="font-semibold mb-2" style={{ color: "var(--accent)" }}>💡 Безплатни изображения (без теглене — само линк)</p>
+                <p className="mb-2" style={{ color: "var(--muted)" }}>
+                  Нямаш нужда от файловете от изпита. Сложи кой да е от тези линкове като{" "}
+                  <code style={{ background: "var(--input-bg)", padding: "1px 5px", borderRadius: 4 }}>&lt;img src="..."&gt;</code>{" "}
+                  или като <code style={{ background: "var(--input-bg)", padding: "1px 5px", borderRadius: 4 }}>background-image: url('...')</code>:
+                </p>
+                <ul className="space-y-1.5" style={{ color: "var(--muted)" }}>
+                  <li>
+                    <b>Снимка:</b>{" "}
+                    <code style={{ background: "var(--input-bg)", padding: "1px 5px", borderRadius: 4, color: "var(--accent-2-text)" }}>https://picsum.photos/400/300</code>{" "}
+                    (различни размери — сменяш числата)
+                  </li>
+                  <li>
+                    <b>Цветна кутия:</b>{" "}
+                    <code style={{ background: "var(--input-bg)", padding: "1px 5px", borderRadius: 4, color: "var(--accent-2-text)" }}>https://placehold.co/400x300/2E7D32/white?text=Лого</code>
+                  </li>
+                  <li>
+                    <b>Икона:</b>{" "}
+                    <code style={{ background: "var(--input-bg)", padding: "1px 5px", borderRadius: 4, color: "var(--accent-2-text)" }}>https://api.dicebear.com/9.x/icons/svg?seed=eco</code>
+                  </li>
+                </ul>
+              </div>
+              <p className="mt-4 pt-4 text-xs" style={{ color: "var(--muted)", borderTop: "1px solid var(--border)" }}>
                 Източник: ДЗИ &mdash; публично достъпни изпитни материали на{" "}
                 <a href="https://www.mon.bg/dejnosti/matura/" target="_blank" rel="noopener noreferrer" style={{ color: "var(--accent)", textDecoration: "underline" }}>
                   МОН
@@ -643,7 +665,7 @@ function TaskEditor({ task, onBack }: { task: Task; onBack: () => void }) {
         )}
 
         {tab === "preview" && (
-          <iframe ref={iframeRef} className="flex-1 border-0" style={{ background: "#fff" }} title="preview" sandbox="allow-same-origin" />
+          <iframe ref={iframeRef} srcDoc={code} className="flex-1 border-0" style={{ background: "#fff" }} title="preview" sandbox="allow-same-origin" />
         )}
       </div>
 
