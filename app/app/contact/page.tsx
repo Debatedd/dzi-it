@@ -16,7 +16,7 @@ export default function ContactPage() {
           </p>
 
           <a
-            href="mailto:victorpetrov1914@gmail.com"
+            href="mailto:viktorskipetrov@proton.me"
             className="inline-flex items-center gap-3 w-full justify-center px-6 py-4 rounded-2xl font-semibold transition-all"
             style={{
               background: "var(--option-selected-bg)",
@@ -27,7 +27,7 @@ export default function ContactPage() {
             }}
           >
             <span>✉️</span>
-            victorpetrov1914@gmail.com
+            viktorskipetrov@proton.me
           </a>
         </div>
 
