@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 
 interface CheckResult {
@@ -15,6 +15,7 @@ interface Task {
   year: string;
   description: string;
   requirements: string[];
+  brief?: ReactNode;
   starter: string;
   runChecks: (doc: Document, containerW: number) => CheckResult[];
 }
@@ -138,7 +139,110 @@ const TASKS: Task[] = [
     id: "zad28-2025aug",
     title: "Задача 28 — Пътна безопасност",
     year: "ДЗИ 2025 (август)",
-    description: "Създайте информативен сайт за пътната безопасност (road.html) с четири части. Използвайте вътрешен стил (внатрешен <style>) за цялата страница.",
+    description: "Създайте информативен сайт за пътната безопасност (road.html) с четири части. Използвайте вътрешен стил (вътрешен <style>) за цялата страница.",
+    brief: (() => {
+      const wireBox: React.CSSProperties = {
+        border: "1px solid var(--muted)",
+        borderRadius: 4,
+        textAlign: "center",
+        fontSize: "0.7rem",
+        color: "var(--muted)",
+        padding: "6px 4px",
+        background: "rgba(255,255,255,0.03)",
+      };
+      return (
+        <>
+          <p style={{ marginBottom: 12 }}>
+            <b>Задача 28.</b> Създайте информативен сайт за пътната безопасност като използвате
+            изображенията и текста от ресурсните файлове в <b>Resources_Zad28</b>. Страницата да бъде
+            със следната структура:
+          </p>
+
+          {/* ── Wireframe на структурата ── */}
+          <div
+            style={{
+              maxWidth: 360,
+              margin: "0 auto 16px",
+              display: "flex",
+              flexDirection: "column",
+              gap: 8,
+              padding: 12,
+              border: "1px dashed var(--border)",
+              borderRadius: 10,
+            }}
+          >
+            <div style={wireBox}>1 &mdash; Заглавие h1</div>
+            <div style={wireBox}>2 &mdash; Текст h3</div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 6 }}>
+              {[1, 2, 3].map((n) => (
+                <div key={n} style={{ ...wireBox, lineHeight: 1.5 }}>
+                  Заглавие h4
+                  <br />🖼<br />текст<br />🔗
+                </div>
+              ))}
+            </div>
+            <div style={{ textAlign: "center", fontSize: "0.65rem", color: "var(--muted)" }}>3 &mdash; три елемента</div>
+            <div style={wireBox}>4 &mdash; Текст h3</div>
+          </div>
+
+          <p style={{ marginBottom: 12, fontStyle: "italic" }}>
+            За стилизиране използвайте вътрешен стил за цялата страница. Използвайте актуални
+            стандарти при структурирането на кода.
+          </p>
+
+          <ol style={{ listStyle: "decimal", paddingLeft: 22, display: "flex", flexDirection: "column", gap: 10 }}>
+            <li>Файлът да е с име: <b>road.html</b></li>
+            <li>Страницата се състои от четири части, като третата съдържа три елемента със сходно оформление.</li>
+            <li>
+              <b>Страницата</b> е с:
+              <ul style={{ listStyle: "disc", paddingLeft: 20, marginTop: 4 }}>
+                <li>Ширина 1000 px</li>
+                <li>Шрифт Calibri</li>
+                <li>Размер на буквите 14 pt</li>
+              </ul>
+            </li>
+            <li>
+              <b>Първа част</b> (заглавна):
+              <ul style={{ listStyle: "disc", paddingLeft: 20, marginTop: 4 }}>
+                <li>съдържа центрирано заглавие (налично в текстовия документ) с цвят: <b>#EE4A49</b></li>
+                <li>за фон има изображение &mdash; <b>header.jpg</b></li>
+              </ul>
+            </li>
+            <li>
+              <b>Втората и четвъртата част</b> са еднотипно оформени:
+              <ul style={{ listStyle: "disc", paddingLeft: 20, marginTop: 4 }}>
+                <li>с фон <b>#EE4A49</b></li>
+                <li>центриран текст с бял цвят</li>
+                <li>отстояние от текста до рамките на секцията 30 px от всички страни</li>
+              </ul>
+            </li>
+            <li>
+              <b>Третата част</b> съдържа три сходно оформени елемента, като всеки от тях е с еднаква
+              ширина и са разположени един до друг.
+              <ul style={{ listStyle: "none", paddingLeft: 8, marginTop: 6, display: "flex", flexDirection: "column", gap: 6 }}>
+                <li>
+                  <b>6.1.</b> Всеки от тези елементи съдържа:
+                  <ul style={{ listStyle: "disc", paddingLeft: 20, marginTop: 4 }}>
+                    <li>центрирано заглавие</li>
+                    <li>изображение</li>
+                    <li>центриран текст</li>
+                    <li>изображение тип икона</li>
+                    <li>хипервръзка</li>
+                  </ul>
+                </li>
+                <li><b>6.2.</b> Височината на елементите е 550 px. Поставете отстояние на съдържанието до външната рамка на елементите 10 px.</li>
+                <li><b>6.3.</b> Фоновете на всеки от елементите са съответно следните: <b>#EFC465</b>, <b>#D5D9F4</b>, <b>#BCDF95</b>.</li>
+              </ul>
+            </li>
+          </ol>
+
+          <p style={{ marginTop: 14, color: "var(--muted)", fontSize: "0.85rem" }}>
+            Създайте архив, включващ създадената страница и използваните изображения, с име{" "}
+            <b>it_25.08.2025_zad28.zip</b> и го прикачете в изпитната система.
+          </p>
+        </>
+      );
+    })(),
     requirements: [
       "Файлът да е road.html и да има 4 части (третата с 3 елемента)",
       "Страница - ширина 1000px",
@@ -358,13 +462,19 @@ function TaskEditor({ task, onBack }: { task: Task; onBack: () => void }) {
         {tab === "task" && (
           <div className="flex-1 overflow-y-auto p-6" style={{ maxWidth: 720, margin: "0 auto" }}>
             <div className="glass rounded-2xl p-6" style={{ border: "1px solid var(--border)" }}>
-              <h2 className="font-bold text-lg mb-2" style={{ color: "var(--accent)" }}>{task.title}</h2>
-              <p className="mb-4 text-sm" style={{ color: "var(--muted)" }}>{task.description}</p>
-              <ol className="space-y-2 text-sm list-decimal list-inside" style={{ color: "var(--text)" }}>
-                {task.requirements.map((req, i) => (
-                  <li key={i}>{req}</li>
-                ))}
-              </ol>
+              <h2 className="font-bold text-lg mb-3" style={{ color: "var(--accent)" }}>{task.title}</h2>
+              {task.brief ? (
+                <div className="text-sm" style={{ color: "var(--text)", lineHeight: 1.6 }}>{task.brief}</div>
+              ) : (
+                <>
+                  <p className="mb-4 text-sm" style={{ color: "var(--muted)" }}>{task.description}</p>
+                  <ol className="space-y-2 text-sm list-decimal list-inside" style={{ color: "var(--text)" }}>
+                    {task.requirements.map((req, i) => (
+                      <li key={i}>{req}</li>
+                    ))}
+                  </ol>
+                </>
+              )}
             </div>
 
             {results && (
