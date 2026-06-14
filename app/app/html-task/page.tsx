@@ -190,7 +190,7 @@ const TASKS: Task[] = [
       // 2-3. Font Calibri, 14pt (~18.67px)
       const bcs = dv.getComputedStyle(doc.body);
       r.push({ label: this.requirements[1], pass: bcs.fontFamily.toLowerCase().includes("calibri"), note: bcs.fontFamily });
-      r.push({ label: this.requirements[2], pass: pxClose(parseFloat(bcs.fontSize), 18.67, 2) || pxClose(parseFloat(bcs.fontSize), 14, 2), note: bcs.fontSize });
+      r.push({ label: this.requirements[2], pass: pxClose(bcs.fontSize, 18.67, 2) || pxClose(bcs.fontSize, 14, 2), note: bcs.fontSize });
 
       // 4. Header background image contains "header"
       const allSections = Array.from(doc.querySelectorAll("body > *, body > div > *")) as HTMLElement[];
