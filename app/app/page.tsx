@@ -90,15 +90,15 @@ export default function HomePage() {
         <div className="flex flex-col sm:flex-row gap-4 mb-16">
           <Link
             href="/html-task"
-            className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-2xl font-semibold glass"
-            style={{ fontSize: "1rem", color: "var(--text)" }}
+            className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-2xl font-semibold text-white"
+            style={{ background: "var(--btn-gradient-wide)", boxShadow: "var(--accent-glow)", fontSize: "1rem" }}
           >
             Започни теория
           </Link>
           <Link
             href="/practice"
-            className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-2xl font-semibold glass"
-            style={{ fontSize: "1rem", color: "var(--text)" }}
+            className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-2xl font-semibold text-white"
+            style={{ background: "var(--btn-gradient-wide)", boxShadow: "var(--accent-glow)", fontSize: "1rem" }}
           >
             Започни практика
           </Link>
