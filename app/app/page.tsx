@@ -4,6 +4,8 @@ import { openQuestions } from "@/lib/openQuestions";
 import ParallaxOrbs from "@/components/ParallaxOrbs";
 import ScrollReveal from "@/components/ScrollReveal";
 import GameStats from "@/components/GameStats";
+import { createClient } from "@/lib/supabase/server";
+import { logout } from "./login/actions";
 
 // hex values kept here for JS string interpolation (e.g. `${color}18` for opacity suffix).
 // The same values are mirrored in globals.css as --topic-* CSS vars.
@@ -14,7 +16,7 @@ const TOPIC_META: Record<string, { icon: string; color: string; label: string }>
   "решаване-икт":     { icon: "🧩", color: "#4ade80", label: "Решаване на проблеми с ИКТ" },
 };
 
-export default function HomePage() {
+export default async function HomePage() {
   const topicMap = new Map<string, number>();
   for (const q of questions) {
     topicMap.set(q.topic, (topicMap.get(q.topic) ?? 0) + 1);
@@ -24,6 +26,17 @@ export default function HomePage() {
   const totalOpen      = openQuestions.length;
   const totalQuestions = totalClosed + totalOpen;
   const totalTopics    = topics.length;
+
+  // Resilient to missing env (e.g. before Vercel env vars are set) — never crash the homepage.
+  let user = null;
+  if (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    try {
+      const supabase = await createClient();
+      user = (await supabase.auth.getUser()).data.user;
+    } catch {
+      user = null;
+    }
+  }
 
   return (
     <>
@@ -43,6 +56,24 @@ export default function HomePage() {
         <Link href="/contact" className="text-sm font-medium" style={{ color: "var(--muted)", textDecoration: "none" }}>
           Контакт
         </Link>
+        {user ? (
+          <form action={logout} className="flex items-center gap-3">
+            <span className="text-sm font-medium hidden sm:inline" style={{ color: "var(--accent-2-text)" }}>
+              {user.email}
+            </span>
+            <button type="submit" className="text-sm font-medium" style={{ color: "var(--muted)", background: "none", border: "none", cursor: "pointer" }}>
+              Изход
+            </button>
+          </form>
+        ) : (
+          <Link
+            href="/login"
+            className="text-sm font-semibold px-4 py-1.5 rounded-xl text-white"
+            style={{ background: "var(--btn-gradient)" }}
+          >
+            Вход
+          </Link>
+        )}
       </nav>
 
       {/* ── HERO ──────────────────────────────────────────────────────── */}
