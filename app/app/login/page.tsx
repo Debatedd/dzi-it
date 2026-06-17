@@ -8,6 +8,24 @@ export default async function LoginPage({
 }: {
   searchParams: Promise<{ error?: string; message?: string; mode?: string }>;
 }) {
+  // If Supabase env vars are missing (e.g. not yet set on Vercel), show a friendly
+  // message instead of crashing with a 500.
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    return (
+      <main className="min-h-screen flex flex-col items-center justify-center px-6 text-center" style={{ color: "var(--text)" }}>
+        <div className="glass rounded-2xl max-w-sm p-7" style={{ border: "1px solid var(--border)" }}>
+          <h1 className="font-bold text-lg mb-2">Акаунтите се настройват</h1>
+          <p className="text-sm" style={{ color: "var(--muted)" }}>
+            Системата за вход още се конфигурира. Опитай отново след малко.
+          </p>
+          <Link href="/" className="inline-block mt-5 text-sm" style={{ color: "var(--accent)" }}>
+            &larr; Към началото
+          </Link>
+        </div>
+      </main>
+    );
+  }
+
   // Already logged in? No reason to be here.
   const supabase = await createClient();
   const { data } = await supabase.auth.getUser();
