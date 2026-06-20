@@ -162,6 +162,15 @@ body {
   opacity: 0.4;
 }
 
+/* ── Field hint (shown only while the input above is focused) ── */
+.field-hint {
+  display: none;
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-top: 2px;
+}
+input:focus ~ .field-hint { display: block; }
+
 /* ── Scrollbar ── */
 ::-webkit-scrollbar       { width: 6px; }
 ::-webkit-scrollbar-track { background: var(--bg); }

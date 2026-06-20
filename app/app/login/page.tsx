@@ -112,6 +112,7 @@ export default async function LoginPage({
               className="rounded-xl px-4 py-2.5 focus:outline-none"
               style={{ background: "var(--input-bg)", border: "1px solid var(--border)", color: "var(--text)" }}
             />
+            {isRegister && <span className="field-hint">поне 6 символа</span>}
           </label>
 
           <button
