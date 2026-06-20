@@ -73,6 +73,23 @@ export default async function LoginPage({
         )}
 
         <form className="flex flex-col gap-3">
+          {isRegister && (
+            <label className="flex flex-col gap-1 text-sm">
+              <span style={{ color: "var(--muted)" }}>Потребителско име</span>
+              <input
+                type="text"
+                name="username"
+                required
+                minLength={3}
+                maxLength={20}
+                autoComplete="username"
+                placeholder="как да те виждат другите"
+                className="rounded-xl px-4 py-2.5 focus:outline-none"
+                style={{ background: "var(--input-bg)", border: "1px solid var(--border)", color: "var(--text)" }}
+              />
+            </label>
+          )}
+
           <label className="flex flex-col gap-1 text-sm">
             <span style={{ color: "var(--muted)" }}>Имейл</span>
             <input
@@ -107,6 +124,16 @@ export default async function LoginPage({
           >
             {isRegister ? "Регистрация" : "Вход"}
           </button>
+
+          {isRegister && (
+            <p className="text-xs text-center mt-1" style={{ color: "var(--muted)" }}>
+              С регистрацията се съгласяваш с{" "}
+              <Link href="/privacy" style={{ color: "var(--accent)" }}>
+                Политиката за поверителност
+              </Link>
+              .
+            </p>
+          )}
         </form>
 
         <div className="mt-5 text-center text-sm" style={{ color: "var(--muted)" }}>

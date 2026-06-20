@@ -29,10 +29,19 @@ export default async function HomePage() {
 
   // Resilient to missing env (e.g. before Vercel env vars are set) — never crash the homepage.
   let user = null;
+  let displayName: string | null = null;
   if (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
     try {
       const supabase = await createClient();
       user = (await supabase.auth.getUser()).data.user;
+      if (user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("username")
+          .eq("id", user.id)
+          .single();
+        displayName = profile?.username ?? user.email ?? null;
+      }
     } catch {
       user = null;
     }
@@ -59,7 +68,7 @@ export default async function HomePage() {
         {user ? (
           <form action={logout} className="flex items-center gap-3">
             <span className="text-sm font-medium hidden sm:inline" style={{ color: "var(--accent-2-text)" }}>
-              {user.email}
+              {displayName}
             </span>
             <button type="submit" className="text-sm font-medium" style={{ color: "var(--muted)", background: "none", border: "none", cursor: "pointer" }}>
               Изход
@@ -208,9 +217,10 @@ export default async function HomePage() {
         </ScrollReveal>
 
         {/* Footer links */}
-        <div className="mt-16 flex justify-center gap-8">
+        <div className="mt-16 flex justify-center gap-8 flex-wrap">
           <Link href="/rewards"  style={{ color: "var(--muted)", textDecoration: "none", fontSize: "0.85rem" }}>🏆 Награди</Link>
           <Link href="/feedback" style={{ color: "var(--muted)", textDecoration: "none", fontSize: "0.85rem" }}>💬 Обратна връзка</Link>
+          <Link href="/privacy"  style={{ color: "var(--muted)", textDecoration: "none", fontSize: "0.85rem" }}>🔒 Поверителност</Link>
         </div>
       </section>
 

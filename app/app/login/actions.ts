@@ -23,24 +23,55 @@ export async function signup(formData: FormData) {
   const supabase = await createClient();
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
+  const username = String(formData.get("username") ?? "").trim();
 
+  const regErr = (msg: string) => `/login?mode=register&error=${encodeURIComponent(msg)}`;
+
+  if (username.length < 3 || username.length > 20) {
+    redirect(regErr("Потребителското име трябва да е между 3 и 20 символа."));
+  }
+  if (/\s/.test(username)) {
+    redirect(regErr("Потребителското име не може да съдържа интервали."));
+  }
   if (password.length < 6) {
-    redirect(`/login?mode=register&error=${encodeURIComponent("Паролата трябва да е поне 6 символа.")}`);
+    redirect(regErr("Паролата трябва да е поне 6 символа."));
   }
 
-  const { data, error } = await supabase.auth.signUp({ email, password });
+  // Pre-check username availability (profiles are publicly readable).
+  const { data: taken } = await supabase
+    .from("profiles")
+    .select("id")
+    .ilike("username", username)
+    .maybeSingle();
+  if (taken) {
+    redirect(regErr("Това потребителско име е заето. Избери друго."));
+  }
+
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: { data: { username } },
+  });
 
   if (error) {
-    redirect(`/login?mode=register&error=${encodeURIComponent(error.message)}`);
+    redirect(regErr(error.message));
   }
 
-  // If email confirmation is OFF, a session is created immediately → go home.
-  // If it's ON, the user must click the link in their email first.
-  if (data.session) {
+  // If email confirmation is OFF, a session is created immediately → save the
+  // chosen username on the profile, then go home.
+  if (data.session && data.user) {
+    const { error: profileErr } = await supabase
+      .from("profiles")
+      .update({ username })
+      .eq("id", data.user.id);
+    if (profileErr) {
+      redirect(regErr("Това потребителско име е заето. Избери друго."));
+    }
     revalidatePath("/", "layout");
     redirect("/");
   }
 
+  // If email confirmation is ON, the user must click the link in their email first.
   redirect("/login?message=check-email");
 }
 
