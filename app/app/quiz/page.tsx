@@ -37,13 +37,18 @@ export default async function QuizLandingPage() {
             Избери теми, брой въпроси и време. Изисква акаунт.
           </p>
           {loggedIn ? (
-            <Link
-              href="/quiz/create"
-              className="rounded-xl px-4 py-3 font-semibold text-white text-center"
-              style={{ background: "var(--btn-gradient-wide)", boxShadow: "var(--accent-glow)" }}
-            >
-              Създай тест
-            </Link>
+            <div className="flex flex-col gap-2">
+              <Link
+                href="/quiz/create"
+                className="rounded-xl px-4 py-3 font-semibold text-white text-center"
+                style={{ background: "var(--btn-gradient-wide)", boxShadow: "var(--accent-glow)" }}
+              >
+                Създай тест
+              </Link>
+              <Link href="/quiz/my" className="text-sm text-center" style={{ color: "var(--accent)" }}>
+                Моите тестове →
+              </Link>
+            </div>
           ) : (
             <Link
               href="/login"

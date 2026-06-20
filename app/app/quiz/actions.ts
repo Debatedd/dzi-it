@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import {
   selectQuestions,
@@ -57,6 +58,19 @@ export async function createRoom(formData: FormData) {
   }
 
   redirect(`/quiz/host/${code}`);
+}
+
+export async function deleteRoom(formData: FormData) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  const code = String(formData.get("code") ?? "").trim().toUpperCase();
+  // RLS ensures only the host can delete; participants cascade-delete.
+  await supabase.from("quiz_rooms").delete().eq("code", code).eq("host_id", user.id);
+
+  revalidatePath("/quiz/my");
+  redirect("/quiz/my");
 }
 
 export async function joinRoom(formData: FormData) {
