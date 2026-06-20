@@ -4,12 +4,14 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import {
-  selectQuestions,
-  availableCounts,
+  QUIZ_TOPICS,
+  topicCounts,
+  selectQuestionsForSpec,
   generateRoomCode,
   gradeQuiz,
   type StudentAnswers,
   type RoomQuestionIds,
+  type TopicSpec,
 } from "@/lib/quiz";
 
 export async function createRoom(formData: FormData) {
@@ -18,21 +20,28 @@ export async function createRoom(formData: FormData) {
   if (!user) redirect("/login");
 
   const title = String(formData.get("title") ?? "").trim() || "Тест";
-  const topics = formData.getAll("topics").map(String);
-  const numClosed = Math.max(0, Math.min(50, Number(formData.get("numClosed") ?? 0)));
-  const numOpen = Math.max(0, Math.min(50, Number(formData.get("numOpen") ?? 0)));
+  const selectedTopics = formData.getAll("topics").map(String);
   const minutes = Math.max(1, Math.min(180, Number(formData.get("minutes") ?? 10)));
 
+  // Read per-topic counts; clamp each to what's available in that topic.
+  const spec: TopicSpec[] = [];
+  for (const t of QUIZ_TOPICS) {
+    if (!selectedTopics.includes(t.id)) continue;
+    const avail = topicCounts(t.id);
+    const closed = Math.max(0, Math.min(avail.closed, Number(formData.get(`closed_${t.id}`) ?? 0)));
+    const open = Math.max(0, Math.min(avail.open, Number(formData.get(`open_${t.id}`) ?? 0)));
+    if (closed + open > 0) spec.push({ topic: t.id, closed, open });
+  }
+
+  const numClosed = spec.reduce((s, t) => s + t.closed, 0);
+  const numOpen = spec.reduce((s, t) => s + t.open, 0);
+
   if (numClosed + numOpen < 1) {
-    redirect(`/quiz/create?error=${encodeURIComponent("Избери поне един въпрос.")}`);
+    redirect(`/quiz/create?error=${encodeURIComponent("Избери поне един въпрос от някоя тема.")}`);
   }
 
-  const avail = availableCounts(topics);
-  if (numClosed > avail.closed || numOpen > avail.open) {
-    redirect(`/quiz/create?error=${encodeURIComponent(`Няма достатъчно въпроси (макс. ${avail.closed} затворени, ${avail.open} отворени за избраните теми).`)}`);
-  }
-
-  const questionIds = selectQuestions(topics, numClosed, numOpen);
+  const topics = spec.map((s) => s.topic);
+  const questionIds = selectQuestionsForSpec(spec);
 
   // Generate a unique room code (retry on the rare collision).
   let code = generateRoomCode();

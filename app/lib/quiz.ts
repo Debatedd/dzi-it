@@ -44,6 +44,35 @@ export function availableCounts(topics: string[]): { closed: number; open: numbe
   };
 }
 
+// Available counts for a single topic.
+export function topicCounts(topic: string): { closed: number; open: number } {
+  return {
+    closed: questions.filter((q) => q.topic === topic).length,
+    open: gradableOpen.filter((q) => q.topic === topic).length,
+  };
+}
+
+export interface TopicSpec {
+  topic: string;
+  closed: number;
+  open: number;
+}
+
+// Pick the requested number of closed/open questions from each topic separately.
+export function selectQuestionsForSpec(spec: TopicSpec[]): RoomQuestionIds {
+  const closed: string[] = [];
+  const open: string[] = [];
+  for (const s of spec) {
+    closed.push(
+      ...shuffle(questions.filter((q) => q.topic === s.topic)).slice(0, s.closed).map((q) => q.id),
+    );
+    open.push(
+      ...shuffle(gradableOpen.filter((q) => q.topic === s.topic)).slice(0, s.open).map((q) => q.id),
+    );
+  }
+  return { closed, open };
+}
+
 export function getClosed(id: string): Question | undefined {
   return questions.find((q) => q.id === id);
 }

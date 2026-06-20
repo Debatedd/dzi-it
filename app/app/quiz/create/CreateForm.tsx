@@ -1,19 +1,30 @@
 "use client";
 
 import { useState } from "react";
-import { QUIZ_TOPICS, availableCounts } from "@/lib/quiz";
+import { QUIZ_TOPICS, topicCounts } from "@/lib/quiz";
 import { createRoom } from "../actions";
 
+interface TopicSel { closed: number; open: number; }
+
 export default function CreateForm({ error }: { error?: string }) {
-  const [topics, setTopics] = useState<string[]>([]);
-  const [numClosed, setNumClosed] = useState(8);
-  const [numOpen, setNumOpen] = useState(2);
+  const [sel, setSel] = useState<Record<string, TopicSel>>({});
   const [minutes, setMinutes] = useState(15);
 
-  const avail = availableCounts(topics);
+  const totalClosed = Object.values(sel).reduce((s, t) => s + t.closed, 0);
+  const totalOpen = Object.values(sel).reduce((s, t) => s + t.open, 0);
+  const total = totalClosed + totalOpen;
 
   function toggle(id: string) {
-    setTopics((t) => (t.includes(id) ? t.filter((x) => x !== id) : [...t, id]));
+    setSel((s) => {
+      const next = { ...s };
+      if (next[id]) delete next[id];
+      else next[id] = { closed: 0, open: 0 };
+      return next;
+    });
+  }
+
+  function setCount(id: string, kind: "closed" | "open", value: number, max: number) {
+    setSel((s) => ({ ...s, [id]: { ...s[id], [kind]: Math.max(0, Math.min(max, value || 0)) } }));
   }
 
   const inputStyle = {
@@ -36,41 +47,56 @@ export default function CreateForm({ error }: { error?: string }) {
       </label>
 
       <div className="flex flex-col gap-2 text-sm">
-        <span style={{ color: "var(--muted)" }}>Теми (празно = всички)</span>
-        <div className="grid grid-cols-1 gap-2">
+        <span style={{ color: "var(--muted)" }}>Теми и брой въпроси</span>
+        <div className="flex flex-col gap-2">
           {QUIZ_TOPICS.map((t) => {
-            const on = topics.includes(t.id);
+            const on = !!sel[t.id];
+            const avail = topicCounts(t.id);
             return (
-              <label
+              <div
                 key={t.id}
-                className="flex items-center gap-3 rounded-xl px-4 py-2.5 cursor-pointer"
+                className="rounded-xl px-4 py-3"
                 style={{
                   background: on ? "var(--option-selected-bg)" : "var(--input-bg)",
                   border: `1px solid ${on ? "var(--option-selected-border)" : "var(--border)"}`,
-                  color: on ? "var(--option-selected-text)" : "var(--text)",
                 }}
               >
-                <input type="checkbox" name="topics" value={t.id} checked={on} onChange={() => toggle(t.id)} className="accent-violet-500" />
-                {t.label}
-              </label>
+                <label className="flex items-center gap-3 cursor-pointer" style={{ color: on ? "var(--option-selected-text)" : "var(--text)" }}>
+                  {/* hidden marker so the server knows this topic is included */}
+                  {on && <input type="hidden" name="topics" value={t.id} />}
+                  <input type="checkbox" checked={on} onChange={() => toggle(t.id)} className="accent-violet-500" />
+                  <span className="flex-1">{t.label}</span>
+                </label>
+
+                {on && (
+                  <div className="grid grid-cols-2 gap-3 mt-3">
+                    <label className="flex flex-col gap-1 text-xs" style={{ color: "var(--muted)" }}>
+                      Затворени ({avail.closed})
+                      <input
+                        type="number" name={`closed_${t.id}`} min={0} max={avail.closed}
+                        value={sel[t.id].closed}
+                        onChange={(e) => setCount(t.id, "closed", Number(e.target.value), avail.closed)}
+                        className="rounded-lg px-3 py-2 focus:outline-none" style={inputStyle}
+                      />
+                    </label>
+                    <label className="flex flex-col gap-1 text-xs" style={{ color: "var(--muted)" }}>
+                      Отворени ({avail.open})
+                      <input
+                        type="number" name={`open_${t.id}`} min={0} max={avail.open}
+                        value={sel[t.id].open}
+                        onChange={(e) => setCount(t.id, "open", Number(e.target.value), avail.open)}
+                        className="rounded-lg px-3 py-2 focus:outline-none" style={inputStyle}
+                      />
+                    </label>
+                  </div>
+                )}
+              </div>
             );
           })}
         </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <label className="flex flex-col gap-1 text-sm">
-          <span style={{ color: "var(--muted)" }}>Затворени ({avail.closed} налични)</span>
-          <input type="number" name="numClosed" min={0} max={avail.closed} value={numClosed}
-            onChange={(e) => setNumClosed(Math.max(0, Math.min(avail.closed, Number(e.target.value))))}
-            className="rounded-xl px-4 py-2.5 focus:outline-none" style={inputStyle} />
-        </label>
-        <label className="flex flex-col gap-1 text-sm">
-          <span style={{ color: "var(--muted)" }}>Отворени ({avail.open} налични)</span>
-          <input type="number" name="numOpen" min={0} max={avail.open} value={numOpen}
-            onChange={(e) => setNumOpen(Math.max(0, Math.min(avail.open, Number(e.target.value))))}
-            className="rounded-xl px-4 py-2.5 focus:outline-none" style={inputStyle} />
-        </label>
+        <p className="text-xs" style={{ color: "var(--muted)" }}>
+          Общо: {totalClosed} затворени · {totalOpen} отворени
+        </p>
       </div>
 
       <label className="flex flex-col gap-1 text-sm">
@@ -82,7 +108,7 @@ export default function CreateForm({ error }: { error?: string }) {
 
       <button
         type="submit"
-        disabled={numClosed + numOpen < 1}
+        disabled={total < 1}
         className="rounded-xl px-4 py-3 font-semibold text-white disabled:opacity-40"
         style={{ background: "var(--btn-gradient-wide)", boxShadow: "var(--accent-glow)", cursor: "pointer" }}
       >
