@@ -56,11 +56,36 @@ export default function HostPanel({
     return () => clearInterval(t);
   }, [load]);
 
+  function flashCopied() {
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  }
+
+  // Fallback for when the async Clipboard API is unavailable or blocked
+  // (e.g. "Document is not focused", non-HTTPS, older browsers).
+  function fallbackCopy() {
+    const ta = document.createElement("textarea");
+    ta.value = joinUrl;
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    try {
+      document.execCommand("copy");
+      flashCopied();
+    } catch {
+      // give up silently — the link is selectable in the input anyway
+    }
+    document.body.removeChild(ta);
+  }
+
   function copy() {
-    navigator.clipboard.writeText(joinUrl).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
-    });
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(joinUrl).then(flashCopied).catch(fallbackCopy);
+    } else {
+      fallbackCopy();
+    }
   }
 
   return (

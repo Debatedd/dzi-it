@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="bg">
+    <html lang="bg" data-scroll-behavior="smooth">
       <body className={`${geist.className} bg-gray-50 min-h-screen`} suppressHydrationWarning>{children}</body>
     </html>
   );
