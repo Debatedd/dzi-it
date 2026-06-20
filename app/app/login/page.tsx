@@ -83,7 +83,6 @@ export default async function LoginPage({
                 minLength={3}
                 maxLength={20}
                 autoComplete="username"
-                placeholder="как да те виждат другите"
                 className="rounded-xl px-4 py-2.5 focus:outline-none"
                 style={{ background: "var(--input-bg)", border: "1px solid var(--border)", color: "var(--text)" }}
               />
@@ -97,7 +96,6 @@ export default async function LoginPage({
               name="email"
               required
               autoComplete="email"
-              placeholder="ime@example.com"
               className="rounded-xl px-4 py-2.5 focus:outline-none"
               style={{ background: "var(--input-bg)", border: "1px solid var(--border)", color: "var(--text)" }}
             />
@@ -111,7 +109,6 @@ export default async function LoginPage({
               required
               minLength={6}
               autoComplete={isRegister ? "new-password" : "current-password"}
-              placeholder="поне 6 символа"
               className="rounded-xl px-4 py-2.5 focus:outline-none"
               style={{ background: "var(--input-bg)", border: "1px solid var(--border)", color: "var(--text)" }}
             />
