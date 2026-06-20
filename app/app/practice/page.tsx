@@ -30,7 +30,7 @@ function ModeButtons({ slug, color }: { slug: string | null; color: string }) {
             e.preventDefault();
             const params = new URLSearchParams({ mode });
             if (slug) params.set("topic", slug);
-            router.push(`/quiz?${params}`);
+            router.push(`/quiz/solo?${params}`);
           }}
           className="flex-1 py-2 rounded-xl text-xs font-semibold transition-all"
           style={{

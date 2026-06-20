@@ -120,20 +120,29 @@ export default async function HomePage() {
         </div>
 
         {/* CTA buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-16">
+        <div className="flex flex-col items-center gap-4 mb-16">
+          <div className="flex flex-col sm:flex-row gap-4">
+            <Link
+              href="/practice"
+              className="inline-flex items-center justify-center px-8 py-3.5 rounded-2xl font-semibold text-white"
+              style={{ background: "var(--btn-gradient-wide)", boxShadow: "var(--accent-glow)", fontSize: "1rem", minWidth: 200 }}
+            >
+              Започни теория
+            </Link>
+            <Link
+              href="/html-task"
+              className="inline-flex items-center justify-center px-8 py-3.5 rounded-2xl font-semibold text-white"
+              style={{ background: "var(--btn-gradient-wide)", boxShadow: "var(--accent-glow)", fontSize: "1rem", minWidth: 200 }}
+            >
+              Започни практика
+            </Link>
+          </div>
           <Link
-            href="/practice"
-            className="inline-flex items-center justify-center px-8 py-3.5 rounded-2xl font-semibold text-white"
-            style={{ background: "var(--btn-gradient-wide)", boxShadow: "var(--accent-glow)", fontSize: "1rem", minWidth: 200 }}
+            href="/quiz"
+            className="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-2xl font-semibold"
+            style={{ background: "var(--surface)", border: "1px solid var(--accent-border)", color: "var(--accent)", fontSize: "1rem", minWidth: 200 }}
           >
-            Започни теория
-          </Link>
-          <Link
-            href="/html-task"
-            className="inline-flex items-center justify-center px-8 py-3.5 rounded-2xl font-semibold text-white"
-            style={{ background: "var(--btn-gradient-wide)", boxShadow: "var(--accent-glow)", fontSize: "1rem", minWidth: 200 }}
-          >
-            Започни практика
+            ⚡ Quiz стая
           </Link>
         </div>
 
