@@ -162,6 +162,10 @@ body {
   opacity: 0.4;
 }
 
+/* ── Mobile nav burger (details/summary, no JS) ── */
+summary.nav-burger { list-style: none; }
+summary.nav-burger::-webkit-details-marker { display: none; }
+
 /* ── Field hint (shown only while the input above is focused) ── */
 .field-hint {
   display: none;

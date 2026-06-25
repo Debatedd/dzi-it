@@ -56,15 +56,35 @@ export default async function HomePage() {
         className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-5 py-3"
         style={{ background: "var(--nav-bg)", backdropFilter: "blur(12px)", borderBottom: "1px solid var(--border)" }}
       >
-        {/* Left: page links */}
-        <div className="flex items-center gap-5 sm:gap-6">
+        {/* Left: page links — hamburger on mobile, inline on desktop */}
+        <details className="sm:hidden relative">
+          <summary
+            className="nav-burger flex items-center justify-center rounded-xl cursor-pointer"
+            style={{ width: 38, height: 38, background: "var(--input-bg)", border: "1px solid var(--border)", color: "var(--text)" }}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+          </summary>
+          <div
+            className="absolute top-full left-0 mt-2 flex flex-col gap-1 rounded-2xl p-2 w-52"
+            style={{ background: "var(--bg)", border: "1px solid var(--border)", boxShadow: "0 10px 40px rgba(0,0,0,0.5)" }}
+          >
+            <Link href="/rewards" className="text-sm font-medium px-3 py-2.5 rounded-xl" style={{ color: "var(--text)", textDecoration: "none" }}>🏆 Награди</Link>
+            <Link href="/feedback" className="text-sm font-medium px-3 py-2.5 rounded-xl" style={{ color: "var(--text)", textDecoration: "none" }}>💬 Обратна връзка</Link>
+            <Link href="/contact" className="text-sm font-medium px-3 py-2.5 rounded-xl" style={{ color: "var(--text)", textDecoration: "none" }}>✉️ Контакт</Link>
+            <Link href="/quiz" className="text-sm font-medium px-3 py-2.5 rounded-xl" style={{ color: "var(--text)", textDecoration: "none" }}>⚡ Quiz стая</Link>
+          </div>
+        </details>
+
+        <div className="hidden sm:flex items-center gap-6">
           <Link href="/rewards" className="text-sm font-medium transition-colors hover:opacity-80" style={{ color: "var(--muted)", textDecoration: "none" }}>
             Награди
           </Link>
           <Link href="/feedback" className="text-sm font-medium transition-colors hover:opacity-80" style={{ color: "var(--muted)", textDecoration: "none" }}>
             Обратна връзка
           </Link>
-          <Link href="/contact" className="text-sm font-medium transition-colors hover:opacity-80 hidden sm:inline" style={{ color: "var(--muted)", textDecoration: "none" }}>
+          <Link href="/contact" className="text-sm font-medium transition-colors hover:opacity-80" style={{ color: "var(--muted)", textDecoration: "none" }}>
             Контакт
           </Link>
         </div>
