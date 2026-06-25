@@ -56,6 +56,15 @@ export function getState(): GameState {
   }
 }
 
+export function saveState(state: GameState): void {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(KEY, JSON.stringify(state));
+  } catch {
+    // ignore storage errors
+  }
+}
+
 function todayStr(): string {
   return new Date().toISOString().slice(0, 10);
 }

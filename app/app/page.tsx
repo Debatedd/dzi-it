@@ -92,16 +92,22 @@ export default async function HomePage() {
         {/* Right: account */}
         {user ? (
           <div className="flex items-center gap-2.5 pl-4 sm:ml-2" style={{ borderLeft: "1px solid var(--border)" }}>
-            <span
-              className="flex items-center justify-center rounded-full font-bold text-white flex-shrink-0"
-              style={{ width: 30, height: 30, fontSize: "0.8rem", background: "var(--btn-gradient)" }}
-              title={displayName ?? ""}
+            <Link
+              href="/profile"
+              className="flex items-center gap-2.5 transition-opacity hover:opacity-80"
+              style={{ textDecoration: "none" }}
+              title="Моят профил"
             >
-              {(displayName ?? "?").charAt(0).toUpperCase()}
-            </span>
-            <span className="text-sm font-medium hidden sm:inline" style={{ color: "var(--text)" }}>
-              {displayName}
-            </span>
+              <span
+                className="flex items-center justify-center rounded-full font-bold text-white flex-shrink-0"
+                style={{ width: 30, height: 30, fontSize: "0.8rem", background: "var(--btn-gradient)" }}
+              >
+                {(displayName ?? "?").charAt(0).toUpperCase()}
+              </span>
+              <span className="text-sm font-medium hidden sm:inline" style={{ color: "var(--text)" }}>
+                {displayName}
+              </span>
+            </Link>
             <form action={logout}>
               <button
                 type="submit"
