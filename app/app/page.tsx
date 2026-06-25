@@ -53,31 +53,49 @@ export default async function HomePage() {
 
       {/* ── NAV ──────────────────────────────────────────────────────── */}
       <nav
-        className="fixed top-0 left-0 right-0 z-50 flex items-center px-5 py-3 justify-between sm:justify-end sm:gap-6"
+        className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-5 py-3"
         style={{ background: "var(--nav-bg)", backdropFilter: "blur(12px)", borderBottom: "1px solid var(--border)" }}
       >
-        <Link href="/rewards" className="text-sm font-medium" style={{ color: "var(--muted)", textDecoration: "none" }}>
-          Награди
-        </Link>
-        <Link href="/feedback" className="text-sm font-medium" style={{ color: "var(--muted)", textDecoration: "none" }}>
-          Обратна връзка
-        </Link>
-        <Link href="/contact" className="text-sm font-medium" style={{ color: "var(--muted)", textDecoration: "none" }}>
-          Контакт
-        </Link>
+        {/* Left: page links */}
+        <div className="flex items-center gap-5 sm:gap-6">
+          <Link href="/rewards" className="text-sm font-medium transition-colors hover:opacity-80" style={{ color: "var(--muted)", textDecoration: "none" }}>
+            Награди
+          </Link>
+          <Link href="/feedback" className="text-sm font-medium transition-colors hover:opacity-80" style={{ color: "var(--muted)", textDecoration: "none" }}>
+            Обратна връзка
+          </Link>
+          <Link href="/contact" className="text-sm font-medium transition-colors hover:opacity-80 hidden sm:inline" style={{ color: "var(--muted)", textDecoration: "none" }}>
+            Контакт
+          </Link>
+        </div>
+
+        {/* Right: account */}
         {user ? (
-          <form action={logout} className="flex items-center gap-3">
-            <span className="text-sm font-medium hidden sm:inline" style={{ color: "var(--accent-2-text)" }}>
+          <div className="flex items-center gap-2.5 pl-4 sm:ml-2" style={{ borderLeft: "1px solid var(--border)" }}>
+            <span
+              className="flex items-center justify-center rounded-full font-bold text-white flex-shrink-0"
+              style={{ width: 30, height: 30, fontSize: "0.8rem", background: "var(--btn-gradient)" }}
+              title={displayName ?? ""}
+            >
+              {(displayName ?? "?").charAt(0).toUpperCase()}
+            </span>
+            <span className="text-sm font-medium hidden sm:inline" style={{ color: "var(--text)" }}>
               {displayName}
             </span>
-            <button type="submit" className="text-sm font-medium" style={{ color: "var(--muted)", background: "none", border: "none", cursor: "pointer" }}>
-              Изход
-            </button>
-          </form>
+            <form action={logout}>
+              <button
+                type="submit"
+                className="text-sm font-medium px-3 py-1.5 rounded-lg transition-colors hover:opacity-80"
+                style={{ background: "var(--input-bg)", border: "1px solid var(--border)", color: "var(--muted)", cursor: "pointer" }}
+              >
+                Изход
+              </button>
+            </form>
+          </div>
         ) : (
           <Link
             href="/login"
-            className="text-sm font-semibold px-4 py-1.5 rounded-xl text-white"
+            className="text-sm font-semibold px-4 py-1.5 rounded-xl text-white sm:ml-2"
             style={{ background: "var(--btn-gradient)" }}
           >
             Вход
