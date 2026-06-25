@@ -73,6 +73,14 @@ export function selectQuestionsForSpec(spec: TopicSpec[]): RoomQuestionIds {
   return { closed, open };
 }
 
+// Fast lookup of a question's topic by id (closed + open).
+const topicById = new Map<string, string>();
+for (const q of questions) topicById.set(q.id, q.topic);
+for (const q of openQuestions) topicById.set(q.id, q.topic);
+export function topicOf(id: string): string | undefined {
+  return topicById.get(id);
+}
+
 export function getClosed(id: string): Question | undefined {
   return questions.find((q) => q.id === id);
 }

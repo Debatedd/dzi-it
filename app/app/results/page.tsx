@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import type { AnyQuestion, QuizAnswer } from "@/lib/types";
 import { isClosed } from "@/lib/types";
 import { awardPoints, REWARDS, type AwardResult } from "@/lib/gamification";
+import { recordAnswers } from "@/app/profile/actions";
 import ParallaxOrbs from "@/components/ParallaxOrbs";
 
 const TOPIC_LABELS: Record<string, string> = {
@@ -22,15 +23,22 @@ interface StoredResults {
 export default function ResultsPage() {
   const [data, setData]         = useState<StoredResults | null>(null);
   const [award, setAward]       = useState<AwardResult | null>(null);
+  const scoredRef = useRef(false);
 
   useEffect(() => {
     const raw = sessionStorage.getItem("quizResults");
-    if (raw) {
-      const parsed: StoredResults = JSON.parse(raw);
-      setData(parsed);
-      const correct = parsed.answers.filter((a) => a.correct).length;
-      setAward(awardPoints(correct));
-    }
+    if (!raw) return;
+    const parsed: StoredResults = JSON.parse(raw);
+    setData(parsed);
+
+    // Award points & record answers exactly once (guard against the dev
+    // double-invoke of effects and accidental re-runs).
+    if (scoredRef.current) return;
+    scoredRef.current = true;
+    const correct = parsed.answers.filter((a) => a.correct).length;
+    setAward(awardPoints(correct));
+    // Save per-question results to the account (no-op if not logged in).
+    recordAnswers(parsed.answers.map((a) => ({ questionId: a.questionId, correct: a.correct })));
   }, []);
 
   if (!data) {
