@@ -168,14 +168,14 @@ export default async function HomePage() {
           <div className="flex flex-col sm:flex-row gap-4">
             <Link
               href="/practice"
-              className="inline-flex items-center justify-center px-8 py-3.5 rounded-2xl font-semibold text-white"
+              className="inline-flex items-center justify-center px-8 py-3.5 rounded-2xl font-semibold text-white transition-transform duration-200 hover:-translate-y-0.5"
               style={{ background: "var(--btn-gradient-wide)", boxShadow: "var(--accent-glow)", fontSize: "1rem", minWidth: 200 }}
             >
               Започни теория
             </Link>
             <Link
               href="/html-task"
-              className="inline-flex items-center justify-center px-8 py-3.5 rounded-2xl font-semibold text-white"
+              className="inline-flex items-center justify-center px-8 py-3.5 rounded-2xl font-semibold text-white transition-transform duration-200 hover:-translate-y-0.5"
               style={{ background: "var(--btn-gradient-wide)", boxShadow: "var(--accent-glow)", fontSize: "1rem", minWidth: 200 }}
             >
               Започни практика
@@ -183,7 +183,7 @@ export default async function HomePage() {
           </div>
           <Link
             href="/quiz"
-            className="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-2xl font-semibold"
+            className="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-2xl font-semibold transition-all duration-200 hover:-translate-y-0.5"
             style={{ background: "var(--surface)", border: "1px solid var(--accent-border)", color: "var(--accent)", fontSize: "1rem", minWidth: 200 }}
           >
             ⚡ Quiz стая
@@ -191,17 +191,24 @@ export default async function HomePage() {
         </div>
 
         {/* Stats row */}
-        <div className="flex gap-8 sm:gap-16 mb-20 sm:mb-24">
+        <div
+          className="flex items-stretch glass rounded-2xl mb-20 sm:mb-24 overflow-hidden"
+          style={{ border: "1px solid var(--border)" }}
+        >
           {[
             { value: totalQuestions, label: "въпроса" },
             { value: totalTopics,    label: "теми" },
             { value: "∞",            label: "практики" },
-          ].map(({ value, label }) => (
-            <div key={label} className="text-center">
-              <div className="font-extrabold gradient-text" style={{ fontSize: "clamp(1.8rem, 4vw, 2.8rem)" }}>
+          ].map(({ value, label }, i) => (
+            <div
+              key={label}
+              className="text-center px-7 sm:px-11 py-5"
+              style={{ borderLeft: i > 0 ? "1px solid var(--border)" : "none" }}
+            >
+              <div className="font-extrabold gradient-text" style={{ fontSize: "clamp(1.8rem, 4vw, 2.6rem)", lineHeight: 1 }}>
                 {value}
               </div>
-              <div style={{ color: "var(--muted)", fontSize: "0.85rem" }}>{label}</div>
+              <div style={{ color: "var(--muted)", fontSize: "0.8rem", marginTop: 6 }}>{label}</div>
             </div>
           ))}
         </div>
@@ -233,24 +240,26 @@ export default async function HomePage() {
               <ScrollReveal key={topic} delay={i * 60}>
                 <Link
                   href={`/practice?topic=${encodeURIComponent(topic)}`}
-                  className="glass rounded-2xl px-5 py-5 flex items-center gap-4 group block"
+                  className="glass rounded-2xl pl-5 pr-4 py-4 flex items-center gap-4 group block relative overflow-hidden"
                   style={{ textDecoration: "none" }}
                 >
+                  {/* topic-coloured accent stripe */}
+                  <span className="absolute left-0 top-0 bottom-0" style={{ width: 3, background: meta.color, opacity: 0.7 }} />
                   <div
-                    className="flex-shrink-0 flex items-center justify-center rounded-xl font-mono font-bold text-sm"
-                    style={{ width: 44, height: 44, background: `${meta.color}18`, border: `1px solid ${meta.color}40`, color: meta.color }}
+                    className="flex-shrink-0 flex items-center justify-center rounded-xl text-lg"
+                    style={{ width: 44, height: 44, background: `linear-gradient(135deg, ${meta.color}2e, ${meta.color}10)`, border: `1px solid ${meta.color}45` }}
                   >
                     {meta.icon}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="font-semibold truncate" style={{ color: "var(--text)", fontSize: "0.92rem" }}>
+                    <div className="font-semibold truncate" style={{ color: "var(--text)", fontSize: "0.95rem" }}>
                       {meta.label}
                     </div>
-                    <div style={{ color: "var(--muted)", fontSize: "0.78rem", marginTop: 2 }}>
+                    <div className="inline-block mt-1 rounded-full px-2 py-0.5" style={{ color: meta.color, fontSize: "0.72rem", background: `${meta.color}14` }}>
                       {count} въпроса
                     </div>
                   </div>
-                  <span className="transition-transform group-hover:translate-x-1" style={{ color: meta.color, fontSize: "1.1rem" }}>
+                  <span className="transition-all opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0" style={{ color: meta.color, fontSize: "1.1rem" }}>
                     →
                   </span>
                 </Link>

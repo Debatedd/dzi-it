@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { recordAnswers } from "@/app/profile/actions";
 import {
   QUIZ_TOPICS,
   topicCounts,
@@ -114,6 +115,10 @@ export async function submitResult(
   });
 
   if (error) return { error: error.message };
+
+  // If the student is logged in, fold these answers into their personal
+  // strengths/weaknesses analysis too (no-op for anonymous students).
+  await recordAnswers(result.details);
 
   return { score: result.score, maxScore: result.maxScore };
 }
