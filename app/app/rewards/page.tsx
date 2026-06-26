@@ -37,29 +37,33 @@ export default function RewardsPage() {
           Решавай тестове, спечели точки, отключи съвети за ДЗИ
         </p>
 
-        {/* Stats row */}
+        {/* Stats — ledger strip with a torn (zigzag) bottom edge */}
         <div
-          className="glass rounded-2xl px-6 py-4 flex items-center justify-around mb-10"
-          style={{ border: "1px solid var(--border)" }}
+          className="flex items-stretch mb-10"
+          style={{
+            background: "#212B38",
+            borderTop: "1px solid var(--border)",
+            borderLeft: "1px solid var(--border)",
+            borderRight: "1px solid var(--border)",
+            padding: "18px 0 26px",
+            clipPath:
+              "polygon(0% 0%, 100% 0%, 100% 88%, 93.75% 100%, 87.5% 88%, 81.25% 100%, 75% 88%, 68.75% 100%, 62.5% 88%, 56.25% 100%, 50% 88%, 43.75% 100%, 37.5% 88%, 31.25% 100%, 25% 88%, 18.75% 100%, 12.5% 88%, 6.25% 100%, 0% 88%)",
+          }}
         >
-          <div className="text-center">
-            <div className="font-extrabold gradient-text" style={{ fontSize: "1.8rem" }}>{pts}</div>
-            <div style={{ color: "var(--muted)", fontSize: "0.75rem" }}>точки общо</div>
-          </div>
-          <div style={{ width: 1, height: 36, background: "rgba(255,255,255,0.1)" }} />
-          <div className="text-center">
-            <div className="font-extrabold" style={{ fontSize: "1.8rem", color: streak >= 2 ? "var(--streak-text)" : "var(--muted)" }}>
-              {streak > 0 ? streak : 0}
+          {[
+            { value: pts, label: "точки общо", color: "var(--paper)" },
+            { value: streak > 0 ? streak : 0, label: "дни серия", color: streak >= 2 ? "var(--red)" : "var(--paper)" },
+            { value: `${REWARDS.filter((r) => r.threshold <= pts).length}/${REWARDS.length}`, label: "съвета", color: "var(--paper)" },
+          ].map((c, i) => (
+            <div key={c.label} className="flex-1 text-center" style={{ borderLeft: i > 0 ? "1px solid #3A4452" : "none" }}>
+              <div style={{ fontFamily: "var(--font-ibm-mono), monospace", fontWeight: 600, fontSize: "1.7rem", lineHeight: 1, color: c.color }}>
+                {c.value}
+              </div>
+              <div style={{ fontFamily: "var(--font-ibm-mono), monospace", color: "var(--muted)", fontSize: "0.6rem", letterSpacing: "0.16em", textTransform: "uppercase", marginTop: 7 }}>
+                {c.label}
+              </div>
             </div>
-            <div style={{ color: "var(--muted)", fontSize: "0.75rem" }}>дни серия 🔥</div>
-          </div>
-          <div style={{ width: 1, height: 36, background: "rgba(255,255,255,0.1)" }} />
-          <div className="text-center">
-            <div className="font-extrabold" style={{ fontSize: "1.8rem", color: "var(--accent)" }}>
-              {REWARDS.filter(r => r.threshold <= pts).length} / {REWARDS.length}
-            </div>
-            <div style={{ color: "var(--muted)", fontSize: "0.75rem" }}>съвета</div>
-          </div>
+          ))}
         </div>
 
         {/* How it works */}
