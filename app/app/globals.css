@@ -4,66 +4,69 @@
    DESIGN TOKENS — change only here to retheme the whole app
    ═══════════════════════════════════════════════════════════ */
 :root {
-  /* ── Core palette ── */
-  --bg:           #0f1629;
-  --surface:      rgba(255, 255, 255, 0.07);
-  --surface-hover:rgba(255, 255, 255, 0.13);
-  --border:       rgba(255, 255, 255, 0.12);
-  --border-hover: rgba(139, 92, 246, 0.6);
-  --text:         #eef0ff;
-  --muted:        #8b97c8;
+  /* ══ "Изпитен лист / мастило" палитра ══ */
+  --ink:    #1B2430; /* мастило (фон) */
+  --paper:  #ECE6D8; /* хартия (текст/светли акценти) */
+  --red:    #C73E3A; /* червено мастило (основен акцент) */
+  --green:  #2F6B4F; /* печатно зелено (вторичен акцент) */
 
-  /* ── Brand accents ── */
-  --accent:        #a78bfa;
-  --accent-2:      #22d3ee;
-  --accent-link:   #8b5cf6;
-  --accent-2-text: #67e8f9;
-  --accent-border: rgba(167, 139, 250, 0.3);
+  /* ── Core (semantic names kept so all pages keep resolving) ── */
+  --bg:           #1B2430;
+  --surface:      rgba(236, 230, 216, 0.04);
+  --surface-hover:rgba(236, 230, 216, 0.07);
+  --border:       rgba(236, 230, 216, 0.15);
+  --border-hover: rgba(199, 62, 58, 0.55);
+  --text:         #ECE6D8;
+  --muted:        #9098A8;
 
-  /* Option selected state */
-  --option-selected-bg:     rgba(139, 92, 246, 0.15);
-  --option-selected-border: rgba(139, 92, 246, 0.6);
-  --option-selected-text:   #c4b5fd;
+  /* ── Accents (red primary, green secondary) ── */
+  --accent:        #C73E3A;
+  --accent-2:      #2F6B4F;
+  --accent-link:   #C73E3A;
+  --accent-2-text: #6FA98C;
+  --accent-border: rgba(199, 62, 58, 0.35);
 
-  /* ── Semantic feedback colors ── */
-  --green: #4ade80;
-  --red:   #fb7185;
+  /* Option selected state (red ink) */
+  --option-selected-bg:     rgba(199, 62, 58, 0.14);
+  --option-selected-border: rgba(199, 62, 58, 0.55);
+  --option-selected-text:   #E8B4B1;
 
-  --correct-bg:     rgba(52, 211, 153, 0.12);
-  --correct-border: rgba(52, 211, 153, 0.3);
-  --correct-text:   #6ee7b7;
+  /* ── Semantic feedback ── */
+  --correct-bg:     rgba(47, 107, 79, 0.16);
+  --correct-border: rgba(47, 107, 79, 0.5);
+  --correct-text:   #7FB89E;
 
-  --wrong-bg:     rgba(248, 113, 113, 0.12);
-  --wrong-border: rgba(248, 113, 113, 0.3);
-  --wrong-text:   #fca5a5;
+  --wrong-bg:     rgba(199, 62, 58, 0.14);
+  --wrong-border: rgba(199, 62, 58, 0.5);
+  --wrong-text:   #E2918D;
 
   /* ── Gamification ── */
-  --reward-bg:    rgba(251, 191, 36, 0.06);
-  --reward-border:rgba(251, 191, 36, 0.4);
-  --reward-text:  #fbbf24;
-  --streak-text:  #fb923c;
+  --reward-bg:    rgba(47, 107, 79, 0.10);
+  --reward-border:rgba(47, 107, 79, 0.45);
+  --reward-text:  #6FA98C;
+  --streak-text:  #C73E3A;
 
-  /* ── Topic accent colors ── */
-  --topic-data:  #22d3ee;
-  --topic-media: #a78bfa;
-  --topic-web:   #f59e0b;
-  --topic-ict:   #4ade80;
+  /* ── Topic accents (restrained) ── */
+  --topic-data:  #ECE6D8;
+  --topic-media: #ECE6D8;
+  --topic-web:   #C73E3A;
+  --topic-ict:   #2F6B4F;
 
-  /* ── Gradients ── */
-  --btn-gradient:      linear-gradient(135deg, #7c3aed, #6366f1);
-  --btn-gradient-wide: linear-gradient(135deg, #7c3aed 0%, #6366f1 50%, #0ea5e9 100%);
-  --progress-gradient: linear-gradient(90deg, #7c3aed, #06b6d4);
-  --hero-gradient:     linear-gradient(135deg, #7c3aed 0%, #0ea5e9 100%);
+  /* ── "Gradients" kept as solid ink/red (names retained) ── */
+  --btn-gradient:      #C73E3A;
+  --btn-gradient-wide: #C73E3A;
+  --progress-gradient: #C73E3A;
+  --hero-gradient:     #C73E3A;
 
-  /* ── Shadows / glow ── */
-  --accent-glow:    0 0 30px rgba(139, 92, 246, 0.35);
-  --accent-glow-lg: 0 0 50px rgba(139, 92, 246, 0.3);
+  /* ── Shadows / glow (none — flat documentary look) ── */
+  --accent-glow:    none;
+  --accent-glow-lg: none;
 
   /* ── UI surfaces ── */
-  --nav-bg:   rgba(15, 22, 41, 0.7);
-  --input-bg: rgba(255, 255, 255, 0.06);
-  --track-bg: rgba(255, 255, 255, 0.08);
-  --label-bg: rgba(255, 255, 255, 0.06);
+  --nav-bg:   rgba(27, 36, 48, 0.88);
+  --input-bg: rgba(236, 230, 216, 0.05);
+  --track-bg: rgba(236, 230, 216, 0.10);
+  --label-bg: rgba(236, 230, 216, 0.06);
 }
 
 @theme inline {
@@ -71,6 +74,9 @@
   --color-surface:  var(--surface);
   --color-accent:   var(--accent);
   --color-accent-2: var(--accent-2);
+  --font-sans:  var(--font-ibm-sans), system-ui, sans-serif;
+  --font-serif: var(--font-ibm-serif), Georgia, serif;
+  --font-mono:  var(--font-ibm-mono), ui-monospace, monospace;
 }
 
 html {
@@ -80,11 +86,12 @@ html {
 }
 
 body {
-  /* background-attachment: fixed breaks on iOS Safari — use pseudo-element instead */
-  background: radial-gradient(ellipse 120% 80% at 50% -10%, #1e2a5e 0%, var(--bg) 55%);
   background-color: var(--bg);
+  /* faint "light from the top" so the ink feels intentional, not flat near-black */
+  background-image: radial-gradient(ellipse 110% 60% at 50% -15%, rgba(236, 230, 216, 0.05), transparent 60%);
   min-height: 100dvh;
   color: var(--text);
+  font-family: var(--font-ibm-sans), system-ui, sans-serif;
   overflow-x: hidden;
 }
 
@@ -97,19 +104,15 @@ body {
   pointer-events: none;
 }
 
-/* ── Glass card ── */
+/* ── Panel (formerly "glass") — flat ink panel with a thin paper hairline ── */
 .glass {
   background: var(--surface);
   border: 1px solid var(--border);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  transition: background 0.25s, border-color 0.25s, box-shadow 0.25s, transform 0.25s;
+  transition: background 0.2s, border-color 0.2s;
 }
 .glass:hover {
   background: var(--surface-hover);
   border-color: var(--border-hover);
-  box-shadow: 0 0 40px rgba(139, 92, 246, 0.15);
-  transform: translateY(-2px);
 }
 
 /* ── Scroll-reveal ── */
@@ -121,13 +124,63 @@ body {
 }
 .reveal.visible { opacity: 1; transform: translateY(0); }
 
-/* ── Gradient text ── */
+/* ── Gradient text (neutralised → solid paper) ── */
 .gradient-text {
-  background: linear-gradient(135deg, #c4b5fd 0%, #818cf8 40%, #67e8f9 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--paper);
 }
+
+/* ── Display serif ── */
+.font-display {
+  font-family: var(--font-ibm-serif), Georgia, serif;
+}
+
+/* ── Red-ink correction underline (teacher's mark) ── */
+.ink-underline {
+  border-bottom: 3px solid var(--red);
+  padding-bottom: 2px;
+}
+
+/* ── Rectangular "stamp" tag ── */
+.stamp {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px;
+  border: 1px solid var(--green);
+  color: var(--accent-2-text);
+  font-family: var(--font-ibm-mono), monospace;
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  transform: rotate(-2deg);
+}
+
+/* ── Exam ticket (perforation + notches) ── */
+.ticket {
+  position: relative;
+  background: var(--paper);
+  color: var(--ink);
+  border-radius: 4px;
+}
+/* dotted perforation line */
+.ticket-perf {
+  position: relative;
+  border-left: 2px dashed rgba(27, 36, 48, 0.35);
+}
+/* semi-circular notches punched out top & bottom of the perforation */
+.ticket-perf::before,
+.ticket-perf::after {
+  content: "";
+  position: absolute;
+  left: -7px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--bg);
+}
+.ticket-perf::before { top: -6px; }
+.ticket-perf::after  { bottom: -6px; }
 
 /* ── Animated border glow ── */
 @keyframes border-glow {
@@ -135,19 +188,20 @@ body {
   50%       { box-shadow: 0 0 0 1px rgba(34,211,238,0.4), 0 0 40px rgba(34,211,238,0.15); }
 }
 
-/* ── Pill badge ── */
+/* ── Tag (formerly pill) — squared bordered label ── */
 .pill {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 12px;
-  border-radius: 99px;
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
+  padding: 5px 12px;
+  border-radius: 3px;
+  font-family: var(--font-ibm-mono), monospace;
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: transparent;
+  border: 1px solid var(--border);
   color: var(--muted);
 }
 
