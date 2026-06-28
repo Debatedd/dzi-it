@@ -6,7 +6,6 @@ import type { AnyQuestion, QuizAnswer } from "@/lib/types";
 import { isClosed } from "@/lib/types";
 import { awardPoints, REWARDS, type AwardResult } from "@/lib/gamification";
 import { recordAnswers } from "@/app/profile/actions";
-import ParallaxOrbs from "@/components/ParallaxOrbs";
 
 const TOPIC_LABELS: Record<string, string> = {
   "обработка-анализ": "Обработка и Анализ на Данни",
@@ -87,7 +86,6 @@ export default function ResultsPage() {
 
   return (
     <>
-      <ParallaxOrbs />
       <main className="relative z-10 max-w-xl mx-auto px-6 py-16">
         <h1
           className="font-extrabold text-center mb-10"

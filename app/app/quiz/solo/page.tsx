@@ -91,27 +91,29 @@ function QuizContent() {
       <div style={{ width: "100%", maxWidth: 560 }}>
         {/* Progress bar row */}
         <div className="flex items-center justify-between mb-3">
-          <span style={{ color: "var(--muted)", fontSize: "0.78rem" }}>
-            {index + 1} / {pool.length}
+          <span style={{ fontFamily: "var(--font-ibm-mono), monospace", color: "var(--muted)", fontSize: "0.72rem", letterSpacing: "0.08em" }}>
+            {String(index + 1).padStart(2, "0")} / {String(pool.length).padStart(2, "0")}
           </span>
           <div className="flex items-center gap-3">
-            <span style={{ color: "var(--muted)", fontSize: "0.78rem" }}>
+            <span style={{ fontFamily: "var(--font-ibm-mono), monospace", color: "var(--muted)", fontSize: "0.66rem", letterSpacing: "0.12em", textTransform: "uppercase" }}>
               {isCl ? "Затворен" : isShort ? "Кратък отговор" : "Открит отговор"}
             </span>
             <button
               onClick={() => router.push("/practice")}
               title="Изход от теста"
               style={{
-                background: "var(--input-bg)",
+                background: "transparent",
                 border: "1px solid var(--border)",
                 color: "var(--muted)",
-                borderRadius: 8,
-                padding: "2px 10px",
-                fontSize: "0.75rem",
+                borderRadius: 4,
+                padding: "3px 11px",
+                fontFamily: "var(--font-ibm-mono), monospace",
+                fontSize: "0.68rem",
+                letterSpacing: "0.06em",
                 cursor: "pointer",
               }}
             >
-              ✕ Изход
+              ИЗХОД
             </button>
           </div>
         </div>
@@ -127,7 +129,7 @@ function QuizContent() {
 
         {/* Question card */}
         <div
-          className="glass rounded-3xl p-7 mb-4"
+          className="glass rounded p-7 mb-4"
           style={{ border: "1px solid var(--border)" }}
         >
           <p
@@ -157,7 +159,7 @@ function QuizContent() {
                   <button
                     key={i}
                     onClick={() => setSelIdx(i)}
-                    className="w-full text-left px-4 py-3.5 rounded-2xl text-sm font-medium transition-all"
+                    className="w-full text-left px-4 py-3.5 rounded text-sm font-medium transition-all"
                     style={{ background: bg, border: `1px solid ${border}`, color, cursor: "pointer" }}
                   >
                     <span
@@ -188,7 +190,7 @@ function QuizContent() {
                 }
               }}
               disabled={selIdx === null}
-              className="w-full py-4 rounded-2xl font-bold text-white transition-all disabled:opacity-30"
+              className="w-full py-4 rounded font-bold text-white transition-all disabled:opacity-30"
               style={{ background: "var(--btn-gradient-wide)", boxShadow: selIdx !== null ? "var(--accent-glow)" : "none" }}
             >
               {index + 1 >= pool.length ? "Виж резултатите →" : "Следващ въпрос →"}
@@ -213,7 +215,7 @@ function QuizContent() {
               }}
               disabled={qState !== "answering"}
               placeholder="Напиши отговора си..."
-              className="w-full rounded-2xl px-4 py-3.5 text-sm mb-5 focus:outline-none"
+              className="w-full rounded px-4 py-3.5 text-sm mb-5 focus:outline-none"
               style={{ background: "var(--input-bg)", border: "1px solid var(--border)", color: "var(--text)" }}
             />
 
@@ -227,13 +229,13 @@ function QuizContent() {
                   recordAnswer(correct, { textAnswer: text });
                 }}
                 disabled={!text.trim()}
-                className="w-full py-4 rounded-2xl font-bold text-white transition-all disabled:opacity-30"
+                className="w-full py-4 rounded font-bold text-white transition-all disabled:opacity-30"
                 style={{ background: "var(--btn-gradient)", boxShadow: text.trim() ? "var(--accent-glow)" : "none" }}
               >
                 Провери
               </button>
             ) : (
-              <button onClick={next} className="w-full py-4 rounded-2xl font-bold text-white" style={{ background: "var(--btn-gradient-wide)", boxShadow: "var(--accent-glow)" }}>
+              <button onClick={next} className="w-full py-4 rounded font-bold text-white" style={{ background: "var(--btn-gradient-wide)", boxShadow: "var(--accent-glow)" }}>
                 {index + 1 >= pool.length ? "Виж резултатите →" : "Следващ въпрос →"}
               </button>
             )}
@@ -249,7 +251,7 @@ function QuizContent() {
               disabled={qState !== "answering"}
               placeholder="Напиши отговора си тук..."
               rows={5}
-              className="w-full rounded-2xl px-4 py-3.5 text-sm mb-4 focus:outline-none resize-none"
+              className="w-full rounded px-4 py-3.5 text-sm mb-4 focus:outline-none resize-none"
               style={{ background: "var(--input-bg)", border: "1px solid var(--border)", color: "var(--text)" }}
             />
 
@@ -257,13 +259,13 @@ function QuizContent() {
               <button
                 onClick={() => { if (text.trim()) recordAnswer(true, { textAnswer: text }); }}
                 disabled={!text.trim()}
-                className="w-full py-4 rounded-2xl font-bold text-white transition-all disabled:opacity-30"
+                className="w-full py-4 rounded font-bold text-white transition-all disabled:opacity-30"
                 style={{ background: "var(--btn-gradient)", boxShadow: text.trim() ? "var(--accent-glow)" : "none" }}
               >
                 Напред
               </button>
             ) : (
-              <button onClick={next} className="w-full py-4 rounded-2xl font-bold text-white" style={{ background: "var(--btn-gradient-wide)", boxShadow: "var(--accent-glow)" }}>
+              <button onClick={next} className="w-full py-4 rounded font-bold text-white" style={{ background: "var(--btn-gradient-wide)", boxShadow: "var(--accent-glow)" }}>
                 {index + 1 >= pool.length ? "Виж резултатите →" : "Следващ въпрос →"}
               </button>
             )}
