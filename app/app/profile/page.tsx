@@ -7,23 +7,31 @@ import ProfileProgress from "./ProfileProgress";
 
 export const metadata = { title: "Моят профил — ДЗИ по ИТ" };
 
+const SERIF = "var(--font-ibm-serif), Georgia, serif";
+const MONO = "var(--font-ibm-mono), monospace";
+const AMBER = "#C9A24A";
+
+// Named mastery levels are more legible than a raw percentage.
+function mastery(pct: number | null, attempts: number): { label: string; level: number; color: string } {
+  if (attempts === 0 || pct === null) return { label: "Няма данни", level: 0, color: "var(--muted)" };
+  if (attempts < 4) return { label: "Начинаещ", level: 1, color: "var(--red)" };
+  if (pct >= 85) return { label: "Готов за матура", level: 4, color: "var(--green)" };
+  if (pct >= 65) return { label: "Уверен", level: 3, color: "var(--accent-2-text)" };
+  if (pct >= 45) return { label: "Практикуващ", level: 2, color: AMBER };
+  return { label: "Начинаещ", level: 1, color: "var(--red)" };
+}
+
 export default async function ProfilePage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
   const { data: profile } = await supabase
-    .from("profiles")
-    .select("username, points, streak, created_at")
-    .eq("id", user.id)
-    .single();
+    .from("profiles").select("username, points, streak, created_at").eq("id", user.id).single();
 
   const { data: progress } = await supabase
-    .from("question_progress")
-    .select("question_id, attempts, correct_count")
-    .eq("user_id", user.id);
+    .from("question_progress").select("question_id, attempts, correct_count").eq("user_id", user.id);
 
-  // Aggregate answered questions by topic.
   const agg = new Map<string, { attempts: number; correct: number }>();
   for (const row of progress ?? []) {
     const topic = topicOf(row.question_id);
@@ -40,138 +48,108 @@ export default async function ProfilePage() {
 
   const topicStats = QUIZ_TOPICS.map((t) => {
     const a = agg.get(t.id);
-    return {
-      id: t.id,
-      label: t.label,
-      attempts: a?.attempts ?? 0,
-      pct: a && a.attempts ? Math.round((a.correct / a.attempts) * 100) : null,
-    };
+    const pct = a && a.attempts ? Math.round((a.correct / a.attempts) * 100) : null;
+    return { id: t.id, label: t.label, attempts: a?.attempts ?? 0, pct, m: mastery(pct, a?.attempts ?? 0) };
   });
 
-  const practiced = topicStats.filter((t) => t.attempts > 0);
-  const notPracticed = topicStats.filter((t) => t.attempts === 0);
-  const weakest = practiced.filter((t) => t.pct !== null && t.pct < 70).sort((a, b) => a.pct! - b.pct!);
+  // Specific next action: prefer an untouched topic, else the weakest practiced one.
+  const untouched = topicStats.filter((t) => t.attempts === 0);
+  const practicedByWeakness = topicStats.filter((t) => t.attempts > 0).sort((a, b) => a.m.level - b.m.level || (a.pct ?? 0) - (b.pct ?? 0));
+  const nextTopic = untouched[0] ?? practicedByWeakness[0] ?? topicStats[0];
+  const nextVerb = untouched[0] ? "Пробвай" : "Наблегни на";
 
   const verdict =
-    overallPct >= 80 ? "Справяш се отлично! 🎯" :
+    overallPct >= 80 ? "Справяш се отлично." :
     overallPct >= 60 ? "Добре се справяш — има накъде да растеш." :
     overallPct >= 40 ? "На прав път си, нужна е още практика." :
-    "Има какво да наваксаш — не се отказвай! 💪";
-
-  const verdictColor = overallPct >= 70 ? "var(--green)" : overallPct >= 40 ? "#fbbf24" : "var(--red)";
+    "Има какво да наваксаш — не се отказвай.";
+  const verdictColor = overallPct >= 70 ? "var(--green)" : overallPct >= 40 ? AMBER : "var(--red)";
 
   const name = profile?.username ?? user.email ?? "Профил";
   const joined = profile?.created_at
-    ? new Date(profile.created_at).toLocaleDateString("bg-BG", { year: "numeric", month: "long" })
-    : null;
+    ? new Date(profile.created_at).toLocaleDateString("bg-BG", { year: "numeric", month: "long" }) : null;
+
+  const monoLabel = { fontFamily: MONO, fontSize: "0.62rem", letterSpacing: "0.16em", textTransform: "uppercase" as const, color: "var(--muted)" };
 
   return (
     <main className="min-h-screen flex flex-col items-center px-6 py-12" style={{ color: "var(--text)" }}>
       <div className="w-full max-w-lg flex flex-col gap-5">
-        <Link href="/" className="text-sm" style={{ color: "var(--muted)", textDecoration: "none" }}>
-          &larr; Начало
+        <Link href="/" style={{ color: "var(--muted)", textDecoration: "none", fontFamily: MONO, fontSize: "0.72rem", letterSpacing: "0.12em", textTransform: "uppercase" }}>
+          ← Начало
         </Link>
 
         {/* Header */}
-        <div className="glass rounded-2xl p-6 flex items-center gap-4" style={{ border: "1px solid var(--border)" }}>
-          <span className="flex items-center justify-center rounded-full font-bold text-white flex-shrink-0"
-            style={{ width: 60, height: 60, fontSize: "1.6rem", background: "var(--btn-gradient)" }}>
+        <div className="glass p-6 flex items-center gap-4" style={{ border: "1px solid var(--border)", borderRadius: 4 }}>
+          <span className="flex items-center justify-center rounded-full flex-shrink-0"
+            style={{ width: 58, height: 58, border: "1.5px solid var(--red)", color: "var(--paper)", fontFamily: MONO, fontWeight: 600, fontSize: "1.5rem" }}>
             {name.charAt(0).toUpperCase()}
           </span>
           <div className="flex-1 min-w-0">
-            <h1 className="font-extrabold text-xl truncate">{name}</h1>
-            <p className="text-sm truncate" style={{ color: "var(--muted)" }}>{user.email}</p>
-            {joined && <p className="text-xs mt-0.5" style={{ color: "var(--muted)" }}>Член от {joined}</p>}
+            <h1 className="truncate" style={{ fontFamily: SERIF, fontWeight: 700, fontSize: "1.35rem" }}>{name}</h1>
+            <p className="truncate" style={{ color: "var(--muted)", fontSize: "0.82rem" }}>{user.email}</p>
+            {joined && <p style={{ ...monoLabel, marginTop: 3 }}>Член от {joined}</p>}
           </div>
         </div>
 
         <ProfileProgress dbPoints={profile?.points ?? 0} dbStreak={profile?.streak ?? 0} />
 
-        {/* ── Performance analysis ── */}
-        {totalAttempts === 0 ? (
-          <div className="glass rounded-2xl p-6 text-center" style={{ border: "1px solid var(--border)" }}>
-            <p className="mb-3" style={{ color: "var(--muted)" }}>
-              Още нямаш решени въпроси. Направи няколко практики, за да видиш анализ на силните и слабите си страни.
-            </p>
-            <Link href="/practice" className="font-semibold" style={{ color: "var(--accent)" }}>
-              Започни практика →
-            </Link>
-          </div>
-        ) : (
+        {/* ── Next action (the specific one-tap step) ── */}
+        <div className="glass p-6" style={{ border: "1px solid var(--red)", borderRadius: 4 }}>
+          <div style={monoLabel}>Следваща стъпка</div>
+          <p className="mt-2 mb-4" style={{ fontFamily: SERIF, fontSize: "1.15rem", fontWeight: 600, color: "var(--paper)" }}>
+            {nextVerb} <span style={{ color: "var(--red)" }}>{nextTopic.label}</span>
+          </p>
+          <Link href={`/quiz/solo?topic=${encodeURIComponent(nextTopic.id)}&mode=6`}
+            className="inline-flex items-center justify-center w-full transition-opacity hover:opacity-90"
+            style={{ background: "var(--red)", color: "var(--paper)", fontWeight: 600, padding: "13px 0", borderRadius: 5, textDecoration: "none" }}>
+            Реши 6 въпроса →
+          </Link>
+        </div>
+
+        {totalAttempts > 0 && (
           <>
             {/* Overall */}
-            <div className="glass rounded-2xl p-6 text-center" style={{ border: "1px solid var(--border)" }}>
-              <div className="font-extrabold" style={{ fontSize: "3rem", lineHeight: 1, color: verdictColor }}>{overallPct}%</div>
-              <p className="mt-2 font-semibold">{verdict}</p>
-              <p className="text-sm mt-1" style={{ color: "var(--muted)" }}>
-                {totalCorrect} верни от {totalAttempts} решени
-              </p>
+            <div className="glass p-6 text-center" style={{ border: "1px solid var(--border)", borderRadius: 4 }}>
+              <div style={{ fontFamily: MONO, fontWeight: 700, fontSize: "3rem", lineHeight: 1, color: verdictColor }}>{overallPct}%</div>
+              <p className="mt-3 font-semibold">{verdict}</p>
+              <p style={{ ...monoLabel, marginTop: 6 }}>{totalCorrect} верни от {totalAttempts} решени</p>
             </div>
 
-            {/* Per-topic */}
-            <div className="glass rounded-2xl p-6" style={{ border: "1px solid var(--border)" }}>
-              <h2 className="font-bold mb-4">По теми</h2>
-              <div className="space-y-3">
+            {/* Mastery by topic */}
+            <div className="glass p-6" style={{ border: "1px solid var(--border)", borderRadius: 4 }}>
+              <h2 className="mb-5" style={{ fontFamily: SERIF, fontWeight: 700, fontSize: "1.05rem" }}>Ниво по теми</h2>
+              <div className="space-y-4">
                 {topicStats.map((t) => (
                   <div key={t.id}>
-                    <div className="flex justify-between items-center mb-1.5 text-sm">
-                      <span style={{ color: "var(--text)" }}>{t.label}</span>
-                      <span style={{ color: "var(--muted)" }}>
-                        {t.pct === null ? "няма данни" : `${t.pct}% (${t.attempts})`}
+                    <div className="flex justify-between items-baseline mb-2">
+                      <span style={{ fontSize: "0.9rem", color: "var(--paper)" }}>{t.label}</span>
+                      <span style={{ fontFamily: MONO, fontSize: "0.68rem", letterSpacing: "0.06em", color: t.m.color }}>
+                        {t.m.label}{t.pct !== null ? ` · ${t.pct}%` : ""}
                       </span>
                     </div>
-                    <div className="rounded-full overflow-hidden" style={{ height: 6, background: "var(--track-bg)" }}>
-                      <div className="h-full rounded-full" style={{
-                        width: `${t.pct ?? 0}%`,
-                        background: t.pct === null ? "transparent" : t.pct >= 70 ? "var(--green)" : t.pct >= 40 ? "#fbbf24" : "var(--red)",
-                      }} />
+                    {/* 4-segment mastery bar → progression toward exam-ready */}
+                    <div className="flex gap-1.5">
+                      {[1, 2, 3, 4].map((seg) => (
+                        <div key={seg} className="flex-1" style={{ height: 5, borderRadius: 2, background: seg <= t.m.level ? t.m.color : "var(--track-bg)" }} />
+                      ))}
                     </div>
                   </div>
                 ))}
               </div>
-            </div>
-
-            {/* What to focus on */}
-            <div className="glass rounded-2xl p-6" style={{ border: "1px solid var(--accent-border)" }}>
-              <h2 className="font-bold mb-3" style={{ color: "var(--accent)" }}>🎯 На какво да наблегнеш</h2>
-              {weakest.length === 0 && notPracticed.length === 0 ? (
-                <p className="text-sm" style={{ color: "var(--muted)" }}>
-                  Справяш се добре по всички теми, които си упражнявал — продължавай в същия дух!
-                </p>
-              ) : (
-                <div className="space-y-3">
-                  {weakest.map((t) => (
-                    <div key={t.id} className="flex items-center gap-3">
-                      <span className="flex-1 text-sm">
-                        <b>{t.label}</b> — само {t.pct}% верни. Тук имаш нужда от още работа.
-                      </span>
-                      <Link href={`/quiz/solo?topic=${encodeURIComponent(t.id)}&mode=12`}
-                        className="text-sm font-semibold px-3 py-1.5 rounded-lg text-white flex-shrink-0"
-                        style={{ background: "var(--btn-gradient)", textDecoration: "none" }}>
-                        Упражнявай
-                      </Link>
-                    </div>
-                  ))}
-                  {notPracticed.length > 0 && (
-                    <p className="text-sm" style={{ color: "var(--muted)" }}>
-                      Още не си решавал въпроси от: {notPracticed.map((t) => t.label).join(", ")}.
-                    </p>
-                  )}
-                </div>
-              )}
+              <p style={{ ...monoLabel, marginTop: 16 }}>Начинаещ → Практикуващ → Уверен → Готов за матура</p>
             </div>
           </>
         )}
 
         {/* Quick links */}
         <div className="flex gap-3">
-          <Link href="/quiz/my" className="flex-1 text-center text-sm font-medium rounded-xl px-4 py-3"
-            style={{ background: "var(--input-bg)", border: "1px solid var(--border)", color: "var(--text)", textDecoration: "none" }}>
+          <Link href="/quiz/my" className="flex-1 text-center rounded px-4 py-3"
+            style={{ background: "var(--input-bg)", border: "1px solid var(--border)", color: "var(--text)", textDecoration: "none", fontFamily: MONO, fontSize: "0.72rem", letterSpacing: "0.08em", textTransform: "uppercase", borderRadius: 4 }}>
             Моите тестове
           </Link>
           <form action={logout} className="flex-1">
-            <button type="submit" className="w-full text-sm font-medium rounded-xl px-4 py-3"
-              style={{ background: "var(--wrong-bg)", border: "1px solid var(--wrong-border)", color: "var(--wrong-text)", cursor: "pointer" }}>
+            <button type="submit" className="w-full rounded px-4 py-3"
+              style={{ background: "transparent", border: "1px solid var(--wrong-border)", color: "var(--wrong-text)", cursor: "pointer", fontFamily: MONO, fontSize: "0.72rem", letterSpacing: "0.08em", textTransform: "uppercase", borderRadius: 4 }}>
               Изход
             </button>
           </form>

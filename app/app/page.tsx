@@ -9,11 +9,11 @@ import { logout } from "./login/actions";
 const SERIF = "var(--font-ibm-serif), Georgia, serif";
 const MONO = "var(--font-ibm-mono), monospace";
 
-const TOPIC_META: Record<string, { color: string; label: string }> = {
-  "обработка-анализ": { color: "var(--paper)", label: "Обработка и Анализ на Данни" },
-  "мултимедия":       { color: "var(--paper)", label: "Мултимедия" },
-  "уеб-дизайн":       { color: "var(--red)",   label: "Уеб Дизайн" },
-  "решаване-икт":     { color: "var(--accent-2-text)", label: "Решаване на проблеми с ИКТ" },
+const TOPIC_META: Record<string, { color: string; label: string; desc: string }> = {
+  "обработка-анализ": { color: "var(--paper)", label: "Обработка и Анализ на Данни", desc: "Електронни таблици, бази данни, заявки" },
+  "мултимедия":       { color: "var(--paper)", label: "Мултимедия", desc: "Растерна и векторна графика, звук, видео" },
+  "уеб-дизайн":       { color: "var(--red)",   label: "Уеб Дизайн", desc: "HTML, CSS, уеб стандарти, публикуване" },
+  "решаване-икт":     { color: "var(--accent-2-text)", label: "Решаване на проблеми с ИКТ", desc: "Проекти, хардуер, сигурност, право" },
 };
 
 export default async function HomePage() {
@@ -168,7 +168,10 @@ export default async function HomePage() {
                 <Link href={`/practice?topic=${encodeURIComponent(topic)}`}
                   className="glass flex items-center gap-4 group block relative" style={{ textDecoration: "none", borderRadius: 4, padding: "20px 16px 20px 22px" }}>
                   <span className="absolute left-0 top-0 bottom-0" style={{ width: 3, background: meta.color }} />
-                  <div className="flex-1 min-w-0" style={{ fontFamily: SERIF, fontWeight: 600, color: "var(--paper)", fontSize: "1rem" }}>{meta.label}</div>
+                  <div className="flex-1 min-w-0">
+                    <div className="truncate" style={{ fontFamily: SERIF, fontWeight: 600, color: "var(--paper)", fontSize: "1rem" }}>{meta.label}</div>
+                    <div className="truncate" style={{ color: "var(--muted)", fontSize: "0.78rem", marginTop: 3 }}>{meta.desc}</div>
+                  </div>
                   <span className="transition-all opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0" style={{ color: "var(--red)", fontSize: "1.1rem" }}>→</span>
                 </Link>
               </ScrollReveal>

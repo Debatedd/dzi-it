@@ -7,10 +7,10 @@ const SERIF = "var(--font-ibm-serif), Georgia, serif";
 const MONO = "var(--font-ibm-mono), monospace";
 
 const CATEGORIES = [
-  { slug: "обработка-анализ", label: "Обработка и Анализ на Данни", accent: "var(--paper)" },
-  { slug: "мултимедия",       label: "Мултимедия",                  accent: "var(--paper)" },
-  { slug: "уеб-дизайн",       label: "Уеб Дизайн",                  accent: "var(--red)" },
-  { slug: "решаване-икт",     label: "Решаване на проблеми с ИКТ",  accent: "var(--accent-2-text)" },
+  { slug: "обработка-анализ", label: "Обработка и Анализ на Данни", desc: "Електронни таблици, бази данни, заявки", accent: "var(--paper)" },
+  { slug: "мултимедия",       label: "Мултимедия",                  desc: "Растерна и векторна графика, звук, видео", accent: "var(--paper)" },
+  { slug: "уеб-дизайн",       label: "Уеб Дизайн",                  desc: "HTML, CSS, уеб стандарти, публикуване", accent: "var(--red)" },
+  { slug: "решаване-икт",     label: "Решаване на проблеми с ИКТ",  desc: "Проекти, хардуер, сигурност, право", accent: "var(--accent-2-text)" },
 ];
 
 const MODES = [
@@ -73,6 +73,7 @@ export default function PracticePage() {
           <div key={cat.slug} className="glass p-5 relative" style={{ border: "1px solid var(--border)", borderRadius: 4 }}>
             <span className="absolute left-0 top-0 bottom-0" style={{ width: 3, background: cat.accent }} />
             <div style={{ fontFamily: SERIF, fontWeight: 600, color: "var(--paper)", fontSize: "1.05rem" }}>{cat.label}</div>
+            <div style={{ color: "var(--muted)", fontSize: "0.8rem", marginTop: 2 }}>{cat.desc}</div>
             <ModeButtons slug={cat.slug} />
           </div>
         ))}

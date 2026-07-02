@@ -26,15 +26,15 @@ export default function ProfileProgress({ dbPoints, dbStreak }: { dbPoints: numb
 
   return (
     <div className="grid grid-cols-2 gap-4">
-      <div className="glass rounded-2xl p-5 text-center" style={{ border: "1px solid var(--border)" }}>
-        <div className="font-extrabold gradient-text" style={{ fontSize: "2.2rem", lineHeight: 1 }}>{points}</div>
-        <div className="text-sm mt-1" style={{ color: "var(--muted)" }}>точки</div>
+      <div className="glass p-5 text-center" style={{ border: "1px solid var(--border)", borderRadius: 4 }}>
+        <div style={{ fontFamily: "var(--font-ibm-mono), monospace", fontWeight: 600, fontSize: "2.1rem", lineHeight: 1, color: "var(--paper)" }}>{points}</div>
+        <div style={{ fontFamily: "var(--font-ibm-mono), monospace", fontSize: "0.62rem", letterSpacing: "0.16em", textTransform: "uppercase", color: "var(--muted)", marginTop: 8 }}>точки</div>
       </div>
-      <div className="glass rounded-2xl p-5 text-center" style={{ border: "1px solid var(--border)" }}>
-        <div className="font-extrabold" style={{ fontSize: "2.2rem", lineHeight: 1, color: streak >= 2 ? "#fb923c" : "var(--muted)" }}>
-          {streak > 0 ? `🔥 ${streak}` : "—"}
+      <div className="glass p-5 text-center" style={{ border: "1px solid var(--border)", borderRadius: 4 }}>
+        <div style={{ fontFamily: "var(--font-ibm-mono), monospace", fontWeight: 600, fontSize: "2.1rem", lineHeight: 1, color: streak >= 2 ? "var(--red)" : "var(--muted)" }}>
+          {streak > 0 ? streak : "—"}
         </div>
-        <div className="text-sm mt-1" style={{ color: "var(--muted)" }}>дни серия</div>
+        <div style={{ fontFamily: "var(--font-ibm-mono), monospace", fontSize: "0.62rem", letterSpacing: "0.16em", textTransform: "uppercase", color: "var(--muted)", marginTop: 8 }}>дни серия</div>
       </div>
     </div>
   );
