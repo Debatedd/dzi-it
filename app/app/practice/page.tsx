@@ -8,23 +8,11 @@ import { openQuestions } from "@/lib/openQuestions";
 const SERIF = "var(--font-ibm-serif), Georgia, serif";
 const MONO = "var(--font-ibm-mono), monospace";
 
-function Icon({ name }: { name: string }) {
-  const c = { width: 22, height: 22, viewBox: "0 0 24 24", fill: "none", stroke: "var(--paper)", strokeWidth: 1.6, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
-  switch (name) {
-    case "general": return (<svg {...c}><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="5" /><circle cx="12" cy="12" r="1" /></svg>);
-    case "data":    return (<svg {...c}><ellipse cx="12" cy="6" rx="8" ry="3" /><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6" /><path d="M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6" /></svg>);
-    case "media":   return (<svg {...c}><rect x="3" y="4" width="18" height="16" rx="2" /><circle cx="8.5" cy="9" r="1.5" /><path d="M21 15l-5-5L5 21" /></svg>);
-    case "web":     return (<svg {...c}><circle cx="12" cy="12" r="9" /><path d="M3.6 9h16.8M3.6 15h16.8" /><path d="M11.5 3a17 17 0 0 0 0 18M12.5 3a17 17 0 0 1 0 18" /></svg>);
-    case "ict":     return (<svg {...c}><path d="M9 17a5 5 0 1 1 6 0a3.5 3.5 0 0 0-1 3a2 2 0 0 1-4 0a3.5 3.5 0 0 0-1-3" /><path d="M9.7 18h4.6" /></svg>);
-    default: return null;
-  }
-}
-
 const CATEGORIES = [
-  { slug: "обработка-анализ", label: "Обработка и Анализ на Данни", icon: "data" },
-  { slug: "мултимедия",       label: "Мултимедия",                  icon: "media" },
-  { slug: "уеб-дизайн",       label: "Уеб Дизайн",                  icon: "web" },
-  { slug: "решаване-икт",     label: "Решаване на проблеми с ИКТ",  icon: "ict" },
+  { slug: "обработка-анализ", label: "Обработка и Анализ на Данни", accent: "var(--paper)" },
+  { slug: "мултимедия",       label: "Мултимедия",                  accent: "var(--paper)" },
+  { slug: "уеб-дизайн",       label: "Уеб Дизайн",                  accent: "var(--red)" },
+  { slug: "решаване-икт",     label: "Решаване на проблеми с ИКТ",  accent: "var(--accent-2-text)" },
 ];
 
 const MODES = [
@@ -77,8 +65,8 @@ export default function PracticePage() {
         {/* General test */}
         <div className="glass p-5" style={{ border: "1px solid var(--border)", borderRadius: 4 }}>
           <div className="flex items-center gap-4">
-            <div className="flex items-center justify-center flex-shrink-0" style={{ width: 48, height: 48, borderRadius: 4, border: "1px solid var(--red)" }}>
-              <Icon name="general" />
+            <div className="flex items-center justify-center flex-shrink-0" style={{ width: 48, height: 48, borderRadius: 4, border: "1px solid var(--red)", fontFamily: MONO, fontWeight: 600, fontSize: "1.3rem", color: "var(--red)" }}>
+              ∑
             </div>
             <div>
               <div style={{ fontFamily: SERIF, fontWeight: 600, color: "var(--paper)", fontSize: "1.05rem" }}>Общ тест</div>
@@ -94,10 +82,10 @@ export default function PracticePage() {
           const openCount   = openQuestions.filter((q) => q.topic === cat.slug).length;
           return (
             <div key={cat.slug} className="glass p-5 relative" style={{ border: "1px solid var(--border)", borderRadius: 4 }}>
-              <span className="absolute left-0 top-0 bottom-0" style={{ width: 3, background: i === 2 ? "var(--red)" : i === 3 ? "var(--accent-2)" : "var(--paper)" }} />
+              <span className="absolute left-0 top-0 bottom-0" style={{ width: 3, background: cat.accent }} />
               <div className="flex items-center gap-4">
-                <div className="flex items-center justify-center flex-shrink-0" style={{ width: 48, height: 48, borderRadius: 4, border: "1px solid var(--border)" }}>
-                  <Icon name={cat.icon} />
+                <div className="flex items-center justify-center flex-shrink-0" style={{ width: 48, height: 48, borderRadius: 4, border: `1px solid ${cat.accent}`, fontFamily: MONO, fontWeight: 600, fontSize: "1.1rem", color: cat.accent }}>
+                  {String(i + 1).padStart(2, "0")}
                 </div>
                 <div>
                   <div style={{ fontFamily: SERIF, fontWeight: 600, color: "var(--paper)", fontSize: "1.05rem" }}>{cat.label}</div>

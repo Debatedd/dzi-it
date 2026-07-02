@@ -9,31 +9,11 @@ import { logout } from "./login/actions";
 const SERIF = "var(--font-ibm-serif), Georgia, serif";
 const MONO = "var(--font-ibm-mono), monospace";
 
-// ── thin outline (Tabler-style) icons ───────────────────────────────────────
-function TopicIcon({ name, color }: { name: string; color: string }) {
-  const common = {
-    width: 22, height: 22, viewBox: "0 0 24 24", fill: "none",
-    stroke: color, strokeWidth: 1.6, strokeLinecap: "round" as const, strokeLinejoin: "round" as const,
-  };
-  switch (name) {
-    case "data":
-      return (<svg {...common}><ellipse cx="12" cy="6" rx="8" ry="3" /><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6" /><path d="M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6" /></svg>);
-    case "media":
-      return (<svg {...common}><rect x="3" y="4" width="18" height="16" rx="2" /><circle cx="8.5" cy="9" r="1.5" /><path d="M21 15l-5-5L5 21" /></svg>);
-    case "web":
-      return (<svg {...common}><circle cx="12" cy="12" r="9" /><path d="M3.6 9h16.8M3.6 15h16.8" /><path d="M11.5 3a17 17 0 0 0 0 18M12.5 3a17 17 0 0 1 0 18" /></svg>);
-    case "ict":
-      return (<svg {...common}><path d="M9 17a5 5 0 1 1 6 0a3.5 3.5 0 0 0-1 3a2 2 0 0 1-4 0a3.5 3.5 0 0 0-1-3" /><path d="M9.7 18h4.6" /></svg>);
-    default:
-      return null;
-  }
-}
-
-const TOPIC_META: Record<string, { icon: string; color: string; label: string }> = {
-  "обработка-анализ": { icon: "data",  color: "var(--paper)", label: "Обработка и Анализ на Данни" },
-  "мултимедия":       { icon: "media", color: "var(--paper)", label: "Мултимедия" },
-  "уеб-дизайн":       { icon: "web",   color: "var(--red)",   label: "Уеб Дизайн" },
-  "решаване-икт":     { icon: "ict",   color: "var(--accent-2-text)", label: "Решаване на проблеми с ИКТ" },
+const TOPIC_META: Record<string, { color: string; label: string }> = {
+  "обработка-анализ": { color: "var(--paper)", label: "Обработка и Анализ на Данни" },
+  "мултимедия":       { color: "var(--paper)", label: "Мултимедия" },
+  "уеб-дизайн":       { color: "var(--red)",   label: "Уеб Дизайн" },
+  "решаване-икт":     { color: "var(--accent-2-text)", label: "Решаване на проблеми с ИКТ" },
 };
 
 export default async function HomePage() {
@@ -182,16 +162,17 @@ export default async function HomePage() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {topics.map(([topic, count], i) => {
-            const meta = TOPIC_META[topic] ?? { icon: "ict", color: "var(--paper)", label: topic };
+            const meta = TOPIC_META[topic] ?? { color: "var(--paper)", label: topic };
             return (
               <ScrollReveal key={topic} delay={i * 60}>
                 <Link href={`/practice?topic=${encodeURIComponent(topic)}`}
                   className="glass flex items-center gap-4 group block relative" style={{ textDecoration: "none", borderRadius: 4, padding: "18px 16px 18px 20px" }}>
                   <span className="absolute left-0 top-0 bottom-0" style={{ width: 3, background: meta.color }} />
-                  <span style={{ fontFamily: MONO, color: "var(--muted)", fontSize: "0.8rem", fontWeight: 500 }}>
+                  {/* section-number marker (exam-paper style, no icons) */}
+                  <span className="flex items-center justify-center flex-shrink-0"
+                    style={{ width: 46, height: 46, border: `1px solid ${meta.color}`, borderRadius: 4, fontFamily: MONO, fontWeight: 600, fontSize: "1.05rem", color: meta.color }}>
                     {String(i + 1).padStart(2, "0")}
                   </span>
-                  <TopicIcon name={meta.icon} color={meta.color} />
                   <div className="flex-1 min-w-0">
                     <div className="truncate" style={{ fontFamily: SERIF, fontWeight: 600, color: "var(--paper)", fontSize: "0.98rem" }}>{meta.label}</div>
                     <div style={{ fontFamily: MONO, color: "var(--muted)", fontSize: "0.7rem", letterSpacing: "0.08em", marginTop: 3 }}>{count} ВЪПРОСА</div>
