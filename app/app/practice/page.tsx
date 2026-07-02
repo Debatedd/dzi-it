@@ -2,8 +2,6 @@
 
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { questions } from "@/lib/questions";
-import { openQuestions } from "@/lib/openQuestions";
 
 const SERIF = "var(--font-ibm-serif), Georgia, serif";
 const MONO = "var(--font-ibm-mono), monospace";
@@ -63,41 +61,21 @@ export default function PracticePage() {
 
       <div className="space-y-4">
         {/* General test */}
-        <div className="glass p-5" style={{ border: "1px solid var(--border)", borderRadius: 4 }}>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center justify-center flex-shrink-0" style={{ width: 48, height: 48, borderRadius: 4, border: "1px solid var(--red)", fontFamily: MONO, fontWeight: 600, fontSize: "1.3rem", color: "var(--red)" }}>
-              ∑
-            </div>
-            <div>
-              <div style={{ fontFamily: SERIF, fontWeight: 600, color: "var(--paper)", fontSize: "1.05rem" }}>Общ тест</div>
-              <div style={{ color: "var(--muted)", fontSize: "0.8rem", marginTop: 2 }}>Всички категории, разбъркани</div>
-            </div>
-          </div>
+        <div className="glass p-5 relative" style={{ border: "1px solid var(--border)", borderRadius: 4 }}>
+          <span className="absolute left-0 top-0 bottom-0" style={{ width: 3, background: "var(--red)" }} />
+          <div style={{ fontFamily: SERIF, fontWeight: 600, color: "var(--paper)", fontSize: "1.05rem" }}>Общ тест</div>
+          <div style={{ color: "var(--muted)", fontSize: "0.8rem", marginTop: 2 }}>Всички категории, разбъркани</div>
           <ModeButtons slug={null} />
         </div>
 
         {/* Category cards */}
-        {CATEGORIES.map((cat, i) => {
-          const closedCount = questions.filter((q) => q.topic === cat.slug).length;
-          const openCount   = openQuestions.filter((q) => q.topic === cat.slug).length;
-          return (
-            <div key={cat.slug} className="glass p-5 relative" style={{ border: "1px solid var(--border)", borderRadius: 4 }}>
-              <span className="absolute left-0 top-0 bottom-0" style={{ width: 3, background: cat.accent }} />
-              <div className="flex items-center gap-4">
-                <div className="flex items-center justify-center flex-shrink-0" style={{ width: 48, height: 48, borderRadius: 4, border: `1px solid ${cat.accent}`, fontFamily: MONO, fontWeight: 600, fontSize: "1.1rem", color: cat.accent }}>
-                  {String(i + 1).padStart(2, "0")}
-                </div>
-                <div>
-                  <div style={{ fontFamily: SERIF, fontWeight: 600, color: "var(--paper)", fontSize: "1.05rem" }}>{cat.label}</div>
-                  <div style={{ fontFamily: MONO, color: "var(--muted)", fontSize: "0.72rem", letterSpacing: "0.04em", marginTop: 3 }}>
-                    {closedCount} ЗАТВОРЕНИ · {openCount} ОТКРИТИ
-                  </div>
-                </div>
-              </div>
-              <ModeButtons slug={cat.slug} />
-            </div>
-          );
-        })}
+        {CATEGORIES.map((cat) => (
+          <div key={cat.slug} className="glass p-5 relative" style={{ border: "1px solid var(--border)", borderRadius: 4 }}>
+            <span className="absolute left-0 top-0 bottom-0" style={{ width: 3, background: cat.accent }} />
+            <div style={{ fontFamily: SERIF, fontWeight: 600, color: "var(--paper)", fontSize: "1.05rem" }}>{cat.label}</div>
+            <ModeButtons slug={cat.slug} />
+          </div>
+        ))}
       </div>
     </main>
   );

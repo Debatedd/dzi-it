@@ -161,22 +161,14 @@ export default async function HomePage() {
         </ScrollReveal>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {topics.map(([topic, count], i) => {
+          {topics.map(([topic], i) => {
             const meta = TOPIC_META[topic] ?? { color: "var(--paper)", label: topic };
             return (
               <ScrollReveal key={topic} delay={i * 60}>
                 <Link href={`/practice?topic=${encodeURIComponent(topic)}`}
-                  className="glass flex items-center gap-4 group block relative" style={{ textDecoration: "none", borderRadius: 4, padding: "18px 16px 18px 20px" }}>
+                  className="glass flex items-center gap-4 group block relative" style={{ textDecoration: "none", borderRadius: 4, padding: "20px 16px 20px 22px" }}>
                   <span className="absolute left-0 top-0 bottom-0" style={{ width: 3, background: meta.color }} />
-                  {/* section-number marker (exam-paper style, no icons) */}
-                  <span className="flex items-center justify-center flex-shrink-0"
-                    style={{ width: 46, height: 46, border: `1px solid ${meta.color}`, borderRadius: 4, fontFamily: MONO, fontWeight: 600, fontSize: "1.05rem", color: meta.color }}>
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <div className="flex-1 min-w-0">
-                    <div className="truncate" style={{ fontFamily: SERIF, fontWeight: 600, color: "var(--paper)", fontSize: "0.98rem" }}>{meta.label}</div>
-                    <div style={{ fontFamily: MONO, color: "var(--muted)", fontSize: "0.7rem", letterSpacing: "0.08em", marginTop: 3 }}>{count} ВЪПРОСА</div>
-                  </div>
+                  <div className="flex-1 min-w-0" style={{ fontFamily: SERIF, fontWeight: 600, color: "var(--paper)", fontSize: "1rem" }}>{meta.label}</div>
                   <span className="transition-all opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0" style={{ color: "var(--red)", fontSize: "1.1rem" }}>→</span>
                 </Link>
               </ScrollReveal>
