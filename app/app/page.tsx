@@ -1,27 +1,17 @@
 import Link from "next/link";
 import { questions } from "@/lib/questions";
 import { openQuestions } from "@/lib/openQuestions";
-import ScrollReveal from "@/components/ScrollReveal";
-import GameStats from "@/components/GameStats";
 import { createClient } from "@/lib/supabase/server";
 import { logout } from "./login/actions";
 
 const SERIF = "var(--font-ibm-serif), Georgia, serif";
 const MONO = "var(--font-ibm-mono), monospace";
 
-const TOPIC_META: Record<string, { color: string; label: string; desc: string }> = {
-  "обработка-анализ": { color: "var(--paper)", label: "Обработка и Анализ на Данни", desc: "Електронни таблици, бази данни, заявки" },
-  "мултимедия":       { color: "var(--paper)", label: "Мултимедия", desc: "Растерна и векторна графика, звук, видео" },
-  "уеб-дизайн":       { color: "var(--red)",   label: "Уеб Дизайн", desc: "HTML, CSS, уеб стандарти, публикуване" },
-  "решаване-икт":     { color: "var(--accent-2-text)", label: "Решаване на проблеми с ИКТ", desc: "Проекти, хардуер, сигурност, право" },
-};
-
 export default async function HomePage() {
   const topicMap = new Map<string, number>();
-  for (const q of questions) topicMap.set(q.topic, (topicMap.get(q.topic) ?? 0) + 1);
-  const topics         = Array.from(topicMap.entries());
+  for (const q of questions) topicMap.set(q.topic, 1);
   const totalQuestions = questions.length + openQuestions.length;
-  const totalTopics    = topics.length;
+  const totalTopics    = topicMap.size;
 
   let user = null;
   let displayName: string | null = null;
@@ -105,9 +95,37 @@ export default async function HomePage() {
           проследи напредъка си по теми.
         </p>
 
-        {/* ticket */}
-        <div className="mt-9 w-full" style={{ maxWidth: 460 }}>
-          <GameStats />
+        {/* content ticket — the scope of the question bank (torn-ticket style) */}
+        <div
+          className="mt-9 flex items-stretch"
+          style={{
+            maxWidth: 460, width: "100%",
+            background: "#212B38", border: "1px solid var(--border)", borderRadius: 4,
+            transform: "rotate(-1.2deg)",
+            clipPath: "polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 0 100%)",
+          }}
+        >
+          {/* left stub */}
+          <div className="relative flex flex-col justify-center px-5 py-4 flex-shrink-0" style={{ minWidth: 118, borderRight: "1px dashed #3A4452" }}>
+            <div style={{ fontFamily: MONO, fontSize: "0.58rem", letterSpacing: "0.16em", textTransform: "uppercase", color: "var(--muted)" }}>Матура</div>
+            <div style={{ fontFamily: MONO, fontWeight: 700, fontSize: "1.6rem", color: "var(--red)", lineHeight: 1.1, marginTop: 2 }}>ДЗИ</div>
+            <div style={{ fontFamily: MONO, fontSize: "0.6rem", letterSpacing: "0.14em", color: "var(--muted)", marginTop: 4 }}>· ИТ ·</div>
+            <span style={{ position: "absolute", right: -6, top: 5, width: 12, height: 12, borderRadius: "50%", background: "#1B2430" }} />
+            <span style={{ position: "absolute", right: -6, bottom: 5, width: 12, height: 12, borderRadius: "50%", background: "#1B2430" }} />
+          </div>
+          {/* right: scope */}
+          <div className="flex-1 flex items-center justify-around px-3 py-4 gap-2">
+            {[
+              { value: totalQuestions, label: "въпроса" },
+              { value: totalTopics,    label: "теми" },
+              { value: "∞",            label: "практики" },
+            ].map((s) => (
+              <div key={s.label} className="text-center">
+                <div style={{ fontFamily: MONO, fontWeight: 600, fontSize: "1.35rem", lineHeight: 1, color: "var(--paper)" }}>{s.value}</div>
+                <div style={{ fontFamily: MONO, fontSize: "0.56rem", letterSpacing: "0.16em", textTransform: "uppercase", color: "var(--muted)", marginTop: 6 }}>{s.label}</div>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* CTA */}
@@ -128,75 +146,7 @@ export default async function HomePage() {
           </Link>
         </div>
 
-        {/* registry strip */}
-        <div className="flex items-stretch mb-20 sm:mb-24" style={{ border: "1px solid var(--border)", borderRadius: 4 }}>
-          {[
-            { value: totalQuestions, label: "въпроса" },
-            { value: totalTopics,    label: "теми" },
-            { value: "∞",            label: "практики" },
-          ].map(({ value, label }, i) => (
-            <div key={label} className="text-center px-7 sm:px-10 py-4" style={{ borderLeft: i > 0 ? "1px solid var(--border)" : "none" }}>
-              <div style={{ fontFamily: MONO, fontWeight: 600, color: "var(--paper)", fontSize: "clamp(1.6rem, 4vw, 2.3rem)", lineHeight: 1 }}>{value}</div>
-              <div style={{ color: "var(--muted)", fontFamily: MONO, fontSize: "0.66rem", letterSpacing: "0.16em", textTransform: "uppercase", marginTop: 7 }}>{label}</div>
-            </div>
-          ))}
-        </div>
-
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex-col items-center gap-1 hidden sm:flex"
-          style={{ color: "var(--muted)", fontFamily: MONO, fontSize: "0.66rem", letterSpacing: "0.2em" }}>
-          <span>SCROLL</span>
-          <span style={{ animation: "bounce 1.8s infinite" }}>↓</span>
-        </div>
       </section>
-
-      {/* ── TOPICS ────────────────────────────────────────────────────── */}
-      <section id="topics" className="relative z-10 max-w-3xl mx-auto px-6 pb-32">
-        <ScrollReveal>
-          <h2 className="text-center mb-3" style={{ fontFamily: SERIF, fontWeight: 600, color: "var(--paper)", fontSize: "clamp(1.6rem, 3.5vw, 2.3rem)" }}>
-            Теми за изпита
-          </h2>
-          <p className="text-center mb-12" style={{ color: "var(--muted)" }}>
-            Избери тема или практикувай всички наведнъж
-          </p>
-        </ScrollReveal>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {topics.map(([topic], i) => {
-            const meta = TOPIC_META[topic] ?? { color: "var(--paper)", label: topic };
-            return (
-              <ScrollReveal key={topic} delay={i * 60}>
-                <Link href={`/practice?topic=${encodeURIComponent(topic)}`}
-                  className="glass flex items-center gap-4 group block relative" style={{ textDecoration: "none", borderRadius: 4, padding: "20px 16px 20px 22px" }}>
-                  <span className="absolute left-0 top-0 bottom-0" style={{ width: 3, background: meta.color }} />
-                  <div className="flex-1 min-w-0">
-                    <div className="truncate" style={{ fontFamily: SERIF, fontWeight: 600, color: "var(--paper)", fontSize: "1rem" }}>{meta.label}</div>
-                    <div className="truncate" style={{ color: "var(--muted)", fontSize: "0.78rem", marginTop: 3 }}>{meta.desc}</div>
-                  </div>
-                  <span className="transition-all opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0" style={{ color: "var(--red)", fontSize: "1.1rem" }}>→</span>
-                </Link>
-              </ScrollReveal>
-            );
-          })}
-        </div>
-
-        <ScrollReveal delay={400} className="mt-10 text-center">
-          <Link href="/practice" className="inline-flex items-center gap-2 transition-opacity hover:opacity-90"
-            style={{ background: "var(--red)", color: "var(--paper)", fontWeight: 600, fontSize: "1rem", padding: "15px 34px", borderRadius: 5, textDecoration: "none" }}>
-            Практика — всички теми →
-          </Link>
-        </ScrollReveal>
-
-        {/* footer */}
-        <div className="mt-16 flex justify-center gap-8 flex-wrap">
-          {[["/rewards", "Награди"], ["/feedback", "Обратна връзка"], ["/privacy", "Поверителност"]].map(([href, label]) => (
-            <Link key={href} href={href} style={{ color: "var(--muted)", textDecoration: "none", fontFamily: MONO, fontSize: "0.7rem", letterSpacing: "0.12em", textTransform: "uppercase" }}>{label}</Link>
-          ))}
-        </div>
-      </section>
-
-      <style>{`
-        @keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(6px); } }
-      `}</style>
     </>
   );
 }
