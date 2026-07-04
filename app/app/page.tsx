@@ -103,7 +103,7 @@ export default async function HomePage() {
 
         {/* trust line — scope of the content */}
         <p className="mt-6" style={{ fontFamily: MONO, fontSize: "0.72rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--muted)" }}>
-          <span style={{ color: "var(--paper)" }}>{totalQuestions}</span> въпроса от реални матури · {totalTopics} теми · безплатно
+          <span style={{ color: "var(--paper)" }}>{totalQuestions}</span> въпроса по програмата за ДЗИ · {totalTopics} теми
         </p>
 
         {/* CTA */}
@@ -124,11 +124,11 @@ export default async function HomePage() {
           </Link>
         </div>
 
-        {/* footer */}
-        <div className="flex justify-center gap-6 flex-wrap mt-2">
-          {[["/rewards", "Награди"], ["/feedback", "Обратна връзка"], ["/contact", "Контакт"], ["/privacy", "Поверителност"]].map(([href, label]) => (
-            <Link key={href} href={href} style={{ color: "var(--muted)", textDecoration: "none", fontFamily: MONO, fontSize: "0.68rem", letterSpacing: "0.12em", textTransform: "uppercase" }}>{label}</Link>
-          ))}
+        {/* footer — only the privacy link (nav already covers the rest) */}
+        <div className="flex justify-center mt-2">
+          <Link href="/privacy" style={{ color: "var(--muted)", textDecoration: "none", fontFamily: MONO, fontSize: "0.68rem", letterSpacing: "0.12em", textTransform: "uppercase" }}>
+            Поверителност
+          </Link>
         </div>
       </section>
     </>
