@@ -44,7 +44,7 @@ export default async function HomePage() {
           </summary>
           <div className="absolute top-full left-0 mt-2 flex flex-col w-56"
             style={{ background: "var(--bg)", border: "1px solid var(--border)", borderRadius: 4 }}>
-            {[["/rewards", "Награди"], ["/feedback", "Обратна връзка"], ["/contact", "Контакт"], ["/quiz", "Quiz стая"]].map(([href, label]) => (
+            {[["/rewards", "Награди"], ["/feedback", "Обратна връзка"], ["/contact", "Контакт"], ["/privacy", "Поверителност"], ["/quiz", "Quiz стая"]].map(([href, label]) => (
               <Link key={href} href={href} className="px-4 py-3" style={{ ...navLink, borderBottom: "1px solid var(--border)" }}>{label}</Link>
             ))}
           </div>
@@ -54,6 +54,7 @@ export default async function HomePage() {
           <Link href="/rewards" style={navLink}>Награди</Link>
           <Link href="/feedback" style={navLink}>Обратна връзка</Link>
           <Link href="/contact" style={navLink}>Контакт</Link>
+          <Link href="/privacy" style={navLink}>Поверителност</Link>
         </div>
 
         {/* account */}
@@ -124,12 +125,6 @@ export default async function HomePage() {
           </Link>
         </div>
 
-        {/* footer — only the privacy link (nav already covers the rest) */}
-        <div className="flex justify-center mt-2">
-          <Link href="/privacy" style={{ color: "var(--muted)", textDecoration: "none", fontFamily: MONO, fontSize: "0.68rem", letterSpacing: "0.12em", textTransform: "uppercase" }}>
-            Поверителност
-          </Link>
-        </div>
       </section>
     </>
   );
