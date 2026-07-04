@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { questions } from "@/lib/questions";
 import { openQuestions } from "@/lib/openQuestions";
+import GameStats from "@/components/GameStats";
 import { createClient } from "@/lib/supabase/server";
 import { logout } from "./login/actions";
 
@@ -95,41 +96,18 @@ export default async function HomePage() {
           проследи напредъка си по теми.
         </p>
 
-        {/* content ticket — the scope of the question bank (torn-ticket style) */}
-        <div
-          className="mt-9 flex items-stretch"
-          style={{
-            maxWidth: 460, width: "100%",
-            background: "#212B38", border: "1px solid var(--border)", borderRadius: 4,
-            transform: "rotate(-1.2deg)",
-            clipPath: "polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 0 100%)",
-          }}
-        >
-          {/* left stub */}
-          <div className="relative flex flex-col justify-center px-5 py-4 flex-shrink-0" style={{ minWidth: 118, borderRight: "1px dashed #3A4452" }}>
-            <div style={{ fontFamily: MONO, fontSize: "0.58rem", letterSpacing: "0.16em", textTransform: "uppercase", color: "var(--muted)" }}>Матура</div>
-            <div style={{ fontFamily: MONO, fontWeight: 700, fontSize: "1.6rem", color: "var(--red)", lineHeight: 1.1, marginTop: 2 }}>ДЗИ</div>
-            <div style={{ fontFamily: MONO, fontSize: "0.6rem", letterSpacing: "0.14em", color: "var(--muted)", marginTop: 4 }}>· ИТ ·</div>
-            <span style={{ position: "absolute", right: -6, top: 5, width: 12, height: 12, borderRadius: "50%", background: "#1B2430" }} />
-            <span style={{ position: "absolute", right: -6, bottom: 5, width: 12, height: 12, borderRadius: "50%", background: "#1B2430" }} />
-          </div>
-          {/* right: scope */}
-          <div className="flex-1 flex items-center justify-around px-3 py-4 gap-2">
-            {[
-              { value: totalQuestions, label: "въпроса" },
-              { value: totalTopics,    label: "теми" },
-              { value: "∞",            label: "практики" },
-            ].map((s) => (
-              <div key={s.label} className="text-center">
-                <div style={{ fontFamily: MONO, fontWeight: 600, fontSize: "1.35rem", lineHeight: 1, color: "var(--paper)" }}>{s.value}</div>
-                <div style={{ fontFamily: MONO, fontSize: "0.56rem", letterSpacing: "0.16em", textTransform: "uppercase", color: "var(--muted)", marginTop: 6 }}>{s.label}</div>
-              </div>
-            ))}
-          </div>
+        {/* ticket (points / streak) */}
+        <div className="mt-9 w-full" style={{ maxWidth: 460 }}>
+          <GameStats />
         </div>
 
+        {/* trust line — scope of the content */}
+        <p className="mt-6" style={{ fontFamily: MONO, fontSize: "0.72rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--muted)" }}>
+          <span style={{ color: "var(--paper)" }}>{totalQuestions}</span> въпроса от реални матури · {totalTopics} теми · безплатно
+        </p>
+
         {/* CTA */}
-        <div className="flex flex-col items-center gap-4 mt-10 mb-16">
+        <div className="flex flex-col items-center gap-4 mt-9 mb-10">
           <div className="flex flex-col sm:flex-row gap-4">
             <Link href="/practice" className="inline-flex items-center justify-center transition-opacity hover:opacity-90"
               style={{ background: "var(--red)", color: "var(--paper)", fontWeight: 600, fontSize: "0.95rem", padding: "14px 30px", borderRadius: 5, minWidth: 210, textDecoration: "none" }}>
@@ -146,6 +124,12 @@ export default async function HomePage() {
           </Link>
         </div>
 
+        {/* footer */}
+        <div className="flex justify-center gap-6 flex-wrap mt-2">
+          {[["/rewards", "Награди"], ["/feedback", "Обратна връзка"], ["/contact", "Контакт"], ["/privacy", "Поверителност"]].map(([href, label]) => (
+            <Link key={href} href={href} style={{ color: "var(--muted)", textDecoration: "none", fontFamily: MONO, fontSize: "0.68rem", letterSpacing: "0.12em", textTransform: "uppercase" }}>{label}</Link>
+          ))}
+        </div>
       </section>
     </>
   );
