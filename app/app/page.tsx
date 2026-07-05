@@ -108,81 +108,78 @@ export default async function HomePage() {
         )}
       </nav>
 
-      {/* ── HERO ──────────────────────────────────────────────────────── */}
-      <section className="relative z-10 flex flex-col items-center justify-start min-h-screen px-6 text-center" style={{ paddingTop: "12vh", paddingBottom: "8vh" }}>
-        {/* daily plan card */}
-        <div className="w-full mb-10 text-left" style={{ maxWidth: 470 }}>
-          <div className="glass p-5" style={{ border: "1px solid var(--border)", borderRadius: 4 }}>
-            {/* countdown */}
-            <div className="flex items-center gap-2.5 pb-3.5 mb-3.5" style={{ borderBottom: "1px dashed var(--border)" }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--red)" strokeWidth="1.6" strokeLinecap="round">
-                <circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="5" /><circle cx="12" cy="12" r="1.5" />
-              </svg>
-              <span style={{ fontFamily: SERIF, fontWeight: 600, fontSize: "1.05rem", color: "var(--paper)" }}>
-                До ДЗИ остават <span style={{ color: "var(--red)", fontFamily: MONO, fontWeight: 700 }}>{daysToExam}</span> {daysToExam === 1 ? "ден" : "дни"}
-              </span>
+      {/* ── HERO (two columns on desktop) ─────────────────────────────── */}
+      <section className="relative z-10 min-h-screen flex items-center px-6 py-28">
+        <div className="w-full max-w-5xl mx-auto grid md:grid-cols-2 gap-12 lg:gap-16 items-center">
+
+          {/* LEFT — identity + entry points */}
+          <div className="flex flex-col items-center md:items-start text-center md:text-left">
+            <div className="mb-7 stamp">Държавен зрелостен изпит · Подготовка</div>
+
+            <h1 style={{ fontFamily: SERIF, fontWeight: 700, color: "var(--paper)", fontSize: "clamp(2.4rem, 5vw, 4.3rem)", lineHeight: 1.05, letterSpacing: "-0.01em" }}>
+              <span className="ink-underline">ДЗИ</span> по
+              <br />Информационни
+              <br />Технологии
+            </h1>
+
+            <p className="mt-6" style={{ color: "var(--muted)", fontSize: "1.05rem", maxWidth: 440, lineHeight: 1.7 }}>
+              Практикувай по програмата за ДЗИ, виж обяснения веднага и проследи напредъка си по теми.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-3 mt-8">
+              <Link href="/practice" className="inline-flex items-center justify-center transition-opacity hover:opacity-90"
+                style={{ background: "var(--red)", color: "var(--paper)", fontWeight: 600, fontSize: "0.95rem", padding: "13px 26px", borderRadius: 5, minWidth: 180, textDecoration: "none" }}>
+                Започни теория
+              </Link>
+              <Link href="/html-task" className="inline-flex items-center justify-center transition-colors"
+                style={{ background: "transparent", color: "var(--paper)", border: "1px solid var(--paper)", fontWeight: 600, fontSize: "0.95rem", padding: "13px 26px", borderRadius: 5, minWidth: 180, textDecoration: "none" }}>
+                Започни практика
+              </Link>
             </div>
-            <div style={{ fontFamily: MONO, fontSize: "0.62rem", letterSpacing: "0.16em", textTransform: "uppercase", color: "var(--muted)" }}>Препоръка за днес</div>
-            <ul className="mt-3 space-y-2.5" style={{ fontSize: "0.92rem" }}>
-              {["Реши 12 въпроса", `Позанимавай се с «${suggested.label}»`, "Спечели +25 точки"].map((t, i) => (
-                <li key={i} className="flex items-center gap-2.5">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={i === 2 ? "var(--red)" : "var(--accent-2-text)"} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="9" /><path d="M8 12l3 3 5-6" />
-                  </svg>
-                  <span style={{ color: "var(--paper)" }}>{t}</span>
-                </li>
-              ))}
-            </ul>
-            <Link href={`/quiz/solo?topic=${encodeURIComponent(suggested.id)}&mode=12`}
-              className="inline-flex items-center justify-center w-full mt-5 transition-opacity hover:opacity-90"
-              style={{ background: "var(--red)", color: "var(--paper)", fontWeight: 600, padding: "12px 0", borderRadius: 5, textDecoration: "none" }}>
-              Започни сега →
+            <Link href="/quiz" className="inline-flex items-center gap-2 transition-colors mt-3"
+              style={{ background: "transparent", color: "var(--muted)", border: "1px solid var(--border)", fontFamily: MONO, fontSize: "0.74rem", letterSpacing: "0.1em", textTransform: "uppercase", padding: "10px 24px", borderRadius: 5, justifyContent: "center", textDecoration: "none" }}>
+              Quiz стая →
             </Link>
+
+            <p className="mt-7" style={{ fontFamily: MONO, fontSize: "0.68rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--muted)" }}>
+              <span style={{ color: "var(--paper)" }}>{totalQuestions}</span> въпроса по програмата · {totalTopics} теми
+            </p>
+          </div>
+
+          {/* RIGHT — your dashboard: today's plan + points ticket */}
+          <div className="flex flex-col gap-5 w-full mx-auto" style={{ maxWidth: 440 }}>
+            {/* daily plan card */}
+            <div className="glass p-6 text-left" style={{ border: "1px solid var(--border)", borderRadius: 4 }}>
+              <div className="flex items-center gap-2.5 pb-3.5 mb-3.5" style={{ borderBottom: "1px dashed var(--border)" }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--red)" strokeWidth="1.6" strokeLinecap="round">
+                  <circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="5" /><circle cx="12" cy="12" r="1.5" />
+                </svg>
+                <span style={{ fontFamily: SERIF, fontWeight: 600, fontSize: "1.05rem", color: "var(--paper)" }}>
+                  До ДЗИ остават <span style={{ color: "var(--red)", fontFamily: MONO, fontWeight: 700 }}>{daysToExam}</span> {daysToExam === 1 ? "ден" : "дни"}
+                </span>
+              </div>
+              <div style={{ fontFamily: MONO, fontSize: "0.62rem", letterSpacing: "0.16em", textTransform: "uppercase", color: "var(--muted)" }}>Препоръка за днес</div>
+              <ul className="mt-3 space-y-2.5" style={{ fontSize: "0.92rem" }}>
+                {["Реши 12 въпроса", `Позанимавай се с «${suggested.label}»`, "Спечели +25 точки"].map((t, i) => (
+                  <li key={i} className="flex items-center gap-2.5">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={i === 2 ? "var(--red)" : "var(--accent-2-text)"} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="9" /><path d="M8 12l3 3 5-6" />
+                    </svg>
+                    <span style={{ color: "var(--paper)" }}>{t}</span>
+                  </li>
+                ))}
+              </ul>
+              <Link href={`/quiz/solo?topic=${encodeURIComponent(suggested.id)}&mode=12`}
+                className="inline-flex items-center justify-center w-full mt-5 transition-opacity hover:opacity-90"
+                style={{ background: "var(--red)", color: "var(--paper)", fontWeight: 600, padding: "12px 0", borderRadius: 5, textDecoration: "none" }}>
+                Започни сега →
+              </Link>
+            </div>
+
+            {/* points ticket */}
+            <GameStats />
           </div>
         </div>
-
-        {/* stamp */}
-        <div className="mb-9 stamp">Държавен зрелостен изпит · Подготовка</div>
-
-        <h1 style={{ fontFamily: SERIF, fontWeight: 700, color: "var(--paper)", fontSize: "clamp(2.6rem, 7vw, 5.4rem)", lineHeight: 1.06, maxWidth: 860, letterSpacing: "-0.01em" }}>
-          <span className="ink-underline">ДЗИ</span> по
-          <br />Информационни
-          <br />Технологии
-        </h1>
-
-        <p className="mt-7" style={{ color: "var(--muted)", fontSize: "clamp(1rem, 2.2vw, 1.15rem)", maxWidth: 520, lineHeight: 1.7 }}>
-          Практикувай с реални въпроси от матури, виж обяснения веднага и
-          проследи напредъка си по теми.
-        </p>
-
-        {/* ticket (points / streak) */}
-        <div className="mt-9 w-full" style={{ maxWidth: 460 }}>
-          <GameStats />
-        </div>
-
-        {/* trust line — scope of the content */}
-        <p className="mt-6" style={{ fontFamily: MONO, fontSize: "0.72rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--muted)" }}>
-          <span style={{ color: "var(--paper)" }}>{totalQuestions}</span> въпроса по програмата за ДЗИ · {totalTopics} теми
-        </p>
-
-        {/* CTA */}
-        <div className="flex flex-col items-center gap-4 mt-9 mb-10">
-          <div className="flex flex-col sm:flex-row gap-4">
-            <Link href="/practice" className="inline-flex items-center justify-center transition-opacity hover:opacity-90"
-              style={{ background: "var(--red)", color: "var(--paper)", fontWeight: 600, fontSize: "0.95rem", padding: "14px 30px", borderRadius: 5, minWidth: 210, textDecoration: "none" }}>
-              Започни теория
-            </Link>
-            <Link href="/html-task" className="inline-flex items-center justify-center transition-colors"
-              style={{ background: "transparent", color: "var(--paper)", border: "1px solid var(--paper)", fontWeight: 600, fontSize: "0.95rem", padding: "14px 30px", borderRadius: 5, minWidth: 210, textDecoration: "none" }}>
-              Започни практика
-            </Link>
-          </div>
-          <Link href="/quiz" className="inline-flex items-center gap-2 transition-colors"
-            style={{ background: "transparent", color: "var(--muted)", border: "1px solid var(--border)", fontFamily: MONO, fontSize: "0.78rem", letterSpacing: "0.1em", textTransform: "uppercase", padding: "11px 26px", borderRadius: 5, minWidth: 210, justifyContent: "center", textDecoration: "none" }}>
-            Quiz стая →
-          </Link>
-        </div>
-
       </section>
     </>
   );
