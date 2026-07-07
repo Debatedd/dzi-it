@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { questions } from "@/lib/questions";
 import { openQuestions } from "@/lib/openQuestions";
-import { QUIZ_TOPICS, topicOf } from "@/lib/quiz";
 import GameStats from "@/components/GameStats";
 import { createClient } from "@/lib/supabase/server";
 import { logout } from "./login/actions";
@@ -15,16 +14,6 @@ export default async function HomePage() {
   const totalQuestions = questions.length + openQuestions.length;
   const totalTopics    = topicMap.size;
 
-  // Days until the next ДЗИ (matura ≈ 21 May).
-  const now = new Date();
-  let examYear = now.getFullYear();
-  if (now > new Date(examYear, 4, 21)) examYear += 1;
-  const daysToExam = Math.max(0, Math.ceil((new Date(examYear, 4, 21).getTime() - now.getTime()) / 86400000));
-
-  // Suggested topic for today — rotates by day, or the weakest one for a logged-in user.
-  const dayOfYear = Math.floor((now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) / 86400000);
-  let suggested = QUIZ_TOPICS[dayOfYear % QUIZ_TOPICS.length];
-
   let user = null;
   let displayName: string | null = null;
   if (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
@@ -34,22 +23,6 @@ export default async function HomePage() {
       if (user) {
         const { data: profile } = await supabase.from("profiles").select("username").eq("id", user.id).single();
         displayName = profile?.username ?? user.email ?? null;
-
-        const { data: progress } = await supabase
-          .from("question_progress").select("question_id, attempts, correct_count").eq("user_id", user.id);
-        const agg = new Map<string, { at: number; c: number }>();
-        for (const row of progress ?? []) {
-          const t = topicOf(row.question_id);
-          if (!t) continue;
-          const a = agg.get(t) ?? { at: 0, c: 0 };
-          a.at += row.attempts; a.c += row.correct_count;
-          agg.set(t, a);
-        }
-        const stats = QUIZ_TOPICS.map((t) => { const a = agg.get(t.id); return { t, at: a?.at ?? 0, pct: a && a.at ? a.c / a.at : null }; });
-        const untouched = stats.find((s) => s.at === 0);
-        const weakest = stats.filter((s) => s.pct !== null).sort((a, b) => a.pct! - b.pct!)[0];
-        if (untouched) suggested = untouched.t;
-        else if (weakest) suggested = weakest.t;
       }
     } catch { user = null; }
   }
@@ -108,78 +81,50 @@ export default async function HomePage() {
         )}
       </nav>
 
-      {/* ── HERO (two columns on desktop) ─────────────────────────────── */}
-      <section className="relative z-10 min-h-screen flex items-center px-6 py-28">
-        <div className="w-full max-w-5xl mx-auto grid md:grid-cols-2 gap-12 lg:gap-16 items-center">
+      {/* ── HERO ──────────────────────────────────────────────────────── */}
+      <section className="relative z-10 flex flex-col items-center justify-center min-h-screen px-6 text-center" style={{ paddingTop: "12vh" }}>
+        {/* stamp */}
+        <div className="mb-9 stamp">Държавен зрелостен изпит · Подготовка</div>
 
-          {/* LEFT — identity + entry points */}
-          <div className="flex flex-col items-center md:items-start text-center md:text-left">
-            <div className="mb-7 stamp">Държавен зрелостен изпит · Подготовка</div>
+        <h1 style={{ fontFamily: SERIF, fontWeight: 700, color: "var(--paper)", fontSize: "clamp(2.6rem, 7vw, 5.4rem)", lineHeight: 1.06, maxWidth: 860, letterSpacing: "-0.01em" }}>
+          <span className="ink-underline">ДЗИ</span> по
+          <br />Информационни
+          <br />Технологии
+        </h1>
 
-            <h1 style={{ fontFamily: SERIF, fontWeight: 700, color: "var(--paper)", fontSize: "clamp(2.4rem, 5vw, 4.3rem)", lineHeight: 1.05, letterSpacing: "-0.01em" }}>
-              <span className="ink-underline">ДЗИ</span> по
-              <br />Информационни
-              <br />Технологии
-            </h1>
+        <p className="mt-7" style={{ color: "var(--muted)", fontSize: "clamp(1rem, 2.2vw, 1.15rem)", maxWidth: 520, lineHeight: 1.7 }}>
+          Практикувай с реални въпроси от матури, виж обяснения веднага и
+          проследи напредъка си по теми.
+        </p>
 
-            <p className="mt-6" style={{ color: "var(--muted)", fontSize: "1.05rem", maxWidth: 440, lineHeight: 1.7 }}>
-              Практикувай по програмата за ДЗИ, виж обяснения веднага и проследи напредъка си по теми.
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-3 mt-8">
-              <Link href="/practice" className="inline-flex items-center justify-center transition-opacity hover:opacity-90"
-                style={{ background: "var(--red)", color: "var(--paper)", fontWeight: 600, fontSize: "0.95rem", padding: "13px 26px", borderRadius: 5, minWidth: 180, textDecoration: "none" }}>
-                Започни теория
-              </Link>
-              <Link href="/html-task" className="inline-flex items-center justify-center transition-colors"
-                style={{ background: "transparent", color: "var(--paper)", border: "1px solid var(--paper)", fontWeight: 600, fontSize: "0.95rem", padding: "13px 26px", borderRadius: 5, minWidth: 180, textDecoration: "none" }}>
-                Започни практика
-              </Link>
-            </div>
-            <Link href="/quiz" className="inline-flex items-center gap-2 transition-colors mt-3"
-              style={{ background: "transparent", color: "var(--muted)", border: "1px solid var(--border)", fontFamily: MONO, fontSize: "0.74rem", letterSpacing: "0.1em", textTransform: "uppercase", padding: "10px 24px", borderRadius: 5, justifyContent: "center", textDecoration: "none" }}>
-              Quiz стая →
-            </Link>
-
-            <p className="mt-7" style={{ fontFamily: MONO, fontSize: "0.68rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--muted)" }}>
-              <span style={{ color: "var(--paper)" }}>{totalQuestions}</span> въпроса по програмата · {totalTopics} теми
-            </p>
-          </div>
-
-          {/* RIGHT — your dashboard: today's plan + points ticket */}
-          <div className="flex flex-col gap-5 w-full mx-auto" style={{ maxWidth: 440 }}>
-            {/* daily plan card */}
-            <div className="glass p-6 text-left" style={{ border: "1px solid var(--border)", borderRadius: 4 }}>
-              <div className="flex items-center gap-2.5 pb-3.5 mb-3.5" style={{ borderBottom: "1px dashed var(--border)" }}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--red)" strokeWidth="1.6" strokeLinecap="round">
-                  <circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="5" /><circle cx="12" cy="12" r="1.5" />
-                </svg>
-                <span style={{ fontFamily: SERIF, fontWeight: 600, fontSize: "1.05rem", color: "var(--paper)" }}>
-                  До ДЗИ остават <span style={{ color: "var(--red)", fontFamily: MONO, fontWeight: 700 }}>{daysToExam}</span> {daysToExam === 1 ? "ден" : "дни"}
-                </span>
-              </div>
-              <div style={{ fontFamily: MONO, fontSize: "0.62rem", letterSpacing: "0.16em", textTransform: "uppercase", color: "var(--muted)" }}>Препоръка за днес</div>
-              <ul className="mt-3 space-y-2.5" style={{ fontSize: "0.92rem" }}>
-                {["Реши 12 въпроса", `Позанимавай се с «${suggested.label}»`, "Спечели +25 точки"].map((t, i) => (
-                  <li key={i} className="flex items-center gap-2.5">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={i === 2 ? "var(--red)" : "var(--accent-2-text)"} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="12" cy="12" r="9" /><path d="M8 12l3 3 5-6" />
-                    </svg>
-                    <span style={{ color: "var(--paper)" }}>{t}</span>
-                  </li>
-                ))}
-              </ul>
-              <Link href={`/quiz/solo?topic=${encodeURIComponent(suggested.id)}&mode=12`}
-                className="inline-flex items-center justify-center w-full mt-5 transition-opacity hover:opacity-90"
-                style={{ background: "var(--red)", color: "var(--paper)", fontWeight: 600, padding: "12px 0", borderRadius: 5, textDecoration: "none" }}>
-                Започни сега →
-              </Link>
-            </div>
-
-            {/* points ticket */}
-            <GameStats />
-          </div>
+        {/* ticket (points / streak) */}
+        <div className="mt-9 w-full" style={{ maxWidth: 460 }}>
+          <GameStats />
         </div>
+
+        {/* trust line — scope of the content */}
+        <p className="mt-6" style={{ fontFamily: MONO, fontSize: "0.72rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--muted)" }}>
+          <span style={{ color: "var(--paper)" }}>{totalQuestions}</span> въпроса по програмата за ДЗИ · {totalTopics} теми
+        </p>
+
+        {/* CTA */}
+        <div className="flex flex-col items-center gap-4 mt-9 mb-10">
+          <div className="flex flex-col sm:flex-row gap-4">
+            <Link href="/practice" className="inline-flex items-center justify-center transition-opacity hover:opacity-90"
+              style={{ background: "var(--red)", color: "var(--paper)", fontWeight: 600, fontSize: "0.95rem", padding: "14px 30px", borderRadius: 5, minWidth: 210, textDecoration: "none" }}>
+              Започни теория
+            </Link>
+            <Link href="/html-task" className="inline-flex items-center justify-center transition-colors"
+              style={{ background: "transparent", color: "var(--paper)", border: "1px solid var(--paper)", fontWeight: 600, fontSize: "0.95rem", padding: "14px 30px", borderRadius: 5, minWidth: 210, textDecoration: "none" }}>
+              Започни практика
+            </Link>
+          </div>
+          <Link href="/quiz" className="inline-flex items-center gap-2 transition-colors"
+            style={{ background: "transparent", color: "var(--muted)", border: "1px solid var(--border)", fontFamily: MONO, fontSize: "0.78rem", letterSpacing: "0.1em", textTransform: "uppercase", padding: "11px 26px", borderRadius: 5, minWidth: 210, justifyContent: "center", textDecoration: "none" }}>
+            Quiz стая →
+          </Link>
+        </div>
+
       </section>
     </>
   );
