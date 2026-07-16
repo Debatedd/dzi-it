@@ -1,13 +1,15 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { useState, useMemo, Suspense } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import { questions } from "@/lib/questions";
 import { openQuestions } from "@/lib/openQuestions";
 import type { AnyQuestion, QuizAnswer } from "@/lib/types";
 import { isClosed } from "@/lib/types";
+import { weakQuestionIds, overallAccuracy } from "@/lib/history";
 
 const LABELS = ["А", "Б", "В", "Г"];
+const ADAPTIVE_TOTAL = 12;
 
 function shuffle<T>(arr: T[]): T[] {
   const a = [...arr];
@@ -18,7 +20,37 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
+// "Weak spots": questions this device answered wrong before, worst first.
+function buildWeakQuiz(): AnyQuestion[] {
+  const byId = new Map<string, AnyQuestion>();
+  for (const q of questions) byId.set(q.id, q);
+  for (const q of openQuestions) byId.set(q.id, q);
+  return weakQuestionIds()
+    .map((id) => byId.get(id))
+    .filter((q): q is AnyQuestion => Boolean(q))
+    .slice(0, 12);
+}
+
+// Adaptive pool: closed + auto-gradable short answers (open responses are
+// always marked correct, which would skew the difficulty signal).
+function buildAdaptivePool(topic: string | null): AnyQuestion[] {
+  const closed = topic ? questions.filter((q) => q.topic === topic) : questions;
+  const open = (topic ? openQuestions.filter((q) => q.topic === topic) : openQuestions)
+    .filter((q) => q.type === "short_answer" && q.acceptedAnswers.length > 0);
+  return [...closed, ...open];
+}
+
+// Start level from rolling accuracy so returning users skip the warm-up.
+function initialDifficulty(): 1 | 2 | 3 {
+  const acc = overallAccuracy();
+  if (acc === null) return 1;
+  if (acc >= 0.8) return 3;
+  if (acc >= 0.5) return 2;
+  return 1;
+}
+
 function buildQuiz(topic: string | null, mode: string): AnyQuestion[] {
+  if (mode === "weak") return buildWeakQuiz();
   const closedPool = topic ? questions.filter((q) => q.topic === topic) : questions;
   const openPool   = topic ? openQuestions.filter((q) => q.topic === topic) : openQuestions;
   let closedCount: number, openCount: number;
@@ -37,8 +69,36 @@ function QuizContent() {
   const router = useRouter();
   const topic = searchParams.get("topic") ?? null;
   const mode  = searchParams.get("mode") ?? "dzi";
+  const adaptive = mode === "adaptive";
 
-  const pool = useMemo(() => buildQuiz(topic, mode), []);
+  const adaptivePoolRef = useRef<AnyQuestion[]>([]);
+  const diffRef = useRef<number>(0);
+  const usedRef = useRef<Set<string>>(new Set());
+
+  // Built on the client only (shuffle + localStorage would mismatch the SSR pass).
+  const [pool, setPool] = useState<AnyQuestion[] | null>(null);
+  const [targetLen, setTargetLen] = useState(0);
+
+  useEffect(() => {
+    if (!adaptive) {
+      const p = buildQuiz(topic, mode);
+      setPool(p);
+      setTargetLen(p.length);
+      return;
+    }
+    const ap = buildAdaptivePool(topic);
+    adaptivePoolRef.current = ap;
+    if (ap.length === 0) {
+      setPool([]);
+      return;
+    }
+    diffRef.current = initialDifficulty();
+    const startCandidates = ap.filter((q) => q.difficulty === diffRef.current);
+    const first = shuffle(startCandidates.length ? startCandidates : ap)[0];
+    usedRef.current.add(first.id);
+    setPool([first]);
+    setTargetLen(Math.min(ADAPTIVE_TOTAL, ap.length));
+  }, []);
 
   const [index, setIndex]     = useState(0);
   const [qState, setQState]   = useState<QState>("answering");
@@ -46,19 +106,45 @@ function QuizContent() {
   const [text, setText]       = useState("");
   const [answers, setAnswers] = useState<QuizAnswer[]>([]);
 
+  // Pick the next adaptive question: step difficulty up on a correct answer,
+  // down on a wrong one, then draw the nearest-difficulty unused question.
+  function pickNextAdaptive(correct: boolean): AnyQuestion | null {
+    diffRef.current = Math.max(1, Math.min(3, diffRef.current + (correct ? 1 : -1)));
+    const remaining = adaptivePoolRef.current.filter((q) => !usedRef.current.has(q.id));
+    if (remaining.length === 0) return null;
+    let best: AnyQuestion[] = [];
+    let bestDist = Infinity;
+    for (const q of remaining) {
+      const dist = Math.abs(q.difficulty - diffRef.current);
+      if (dist < bestDist) { best = [q]; bestDist = dist; }
+      else if (dist === bestDist) best.push(q);
+    }
+    const next = best[Math.floor(Math.random() * best.length)];
+    usedRef.current.add(next.id);
+    return next;
+  }
+
+  if (pool === null) {
+    return <main className="min-h-screen" style={{ background: "var(--bg)" }} />;
+  }
+
   if (pool.length === 0) {
     return (
       <main className="min-h-screen flex items-center justify-center px-6">
         <div className="text-center">
-          <p className="mb-4" style={{ color: "var(--muted)" }}>Няма въпроси за тази категория.</p>
-          <button onClick={() => router.back()} style={{ color: "var(--accent-link)" }}>← Назад</button>
+          <p className="mb-4" style={{ color: "var(--muted)" }}>
+            {mode === "weak"
+              ? "Нямаш още отбелязани грешки на това устройство. Реши няколко теста и се върни."
+              : "Няма въпроси за тази категория."}
+          </p>
+          <button onClick={() => router.push("/practice")} style={{ color: "var(--accent-link)", cursor: "pointer", background: "transparent", border: "none" }}>← Към тестовете</button>
         </div>
       </main>
     );
   }
 
   const current  = pool[index];
-  const progress = ((index + 1) / pool.length) * 100;
+  const progress = ((index + 1) / targetLen) * 100;
   const isCl     = isClosed(current);
   const isShort  = !isCl && current.type === "short_answer";
   const isOpen   = !isCl && current.type === "open_response";
@@ -67,13 +153,16 @@ function QuizContent() {
     const newAnswers: QuizAnswer[] = [...answers, { questionId: current.id, correct, ...extra }];
     setAnswers(newAnswers);
     setQState("answered");
-    if (index + 1 >= pool.length) {
+    if (adaptive && newAnswers.length < targetLen) {
+      const nq = pickNextAdaptive(correct);
+      if (nq) setPool((p) => (p ? [...p, nq] : p));
+    } else if (newAnswers.length >= targetLen) {
       sessionStorage.setItem("quizResults", JSON.stringify({ answers: newAnswers, questions: pool }));
     }
   }
 
   function next() {
-    if (index + 1 >= pool.length) {
+    if (index + 1 >= targetLen) {
       router.push("/results");
     } else {
       setIndex((i) => i + 1);
@@ -92,7 +181,9 @@ function QuizContent() {
         {/* Progress bar row */}
         <div className="flex items-center justify-between mb-3">
           <span style={{ fontFamily: "var(--font-ibm-mono), monospace", color: "var(--muted)", fontSize: "0.72rem", letterSpacing: "0.08em" }}>
-            {String(index + 1).padStart(2, "0")} / {String(pool.length).padStart(2, "0")}
+            {String(index + 1).padStart(2, "0")} / {String(targetLen).padStart(2, "0")}
+            {mode === "weak" && <span style={{ marginLeft: 10, color: "var(--red)" }}>· СЛАБИ МЕСТА</span>}
+            {adaptive && <span style={{ marginLeft: 10, color: "var(--red)" }}>· АДАПТИВЕН</span>}
           </span>
           <div className="flex items-center gap-3">
             <span style={{ fontFamily: "var(--font-ibm-mono), monospace", color: "var(--muted)", fontSize: "0.66rem", letterSpacing: "0.12em", textTransform: "uppercase" }}>
@@ -177,12 +268,17 @@ function QuizContent() {
             <button
               onClick={() => {
                 if (selIdx === null) return;
-                const newAnswers: QuizAnswer[] = [...answers, { questionId: current.id, correct: selIdx === current.correctIndex, selectedIndex: selIdx }];
+                const correct = selIdx === current.correctIndex;
+                const newAnswers: QuizAnswer[] = [...answers, { questionId: current.id, correct, selectedIndex: selIdx }];
                 setAnswers(newAnswers);
-                if (index + 1 >= pool.length) {
+                if (newAnswers.length >= targetLen) {
                   sessionStorage.setItem("quizResults", JSON.stringify({ answers: newAnswers, questions: pool }));
                   router.push("/results");
                 } else {
+                  if (adaptive) {
+                    const nq = pickNextAdaptive(correct);
+                    if (nq) setPool((p) => (p ? [...p, nq] : p));
+                  }
                   setIndex((i) => i + 1);
                   setQState("answering");
                   setSelIdx(null);
@@ -193,7 +289,7 @@ function QuizContent() {
               className="w-full py-4 rounded font-bold text-white transition-all disabled:opacity-30"
               style={{ background: "var(--btn-gradient-wide)", boxShadow: selIdx !== null ? "var(--accent-glow)" : "none" }}
             >
-              {index + 1 >= pool.length ? "Виж резултатите →" : "Следващ въпрос →"}
+              {index + 1 >= targetLen ? "Виж резултатите →" : "Следващ въпрос →"}
             </button>
           </>
         )}
@@ -236,7 +332,7 @@ function QuizContent() {
               </button>
             ) : (
               <button onClick={next} className="w-full py-4 rounded font-bold text-white" style={{ background: "var(--btn-gradient-wide)", boxShadow: "var(--accent-glow)" }}>
-                {index + 1 >= pool.length ? "Виж резултатите →" : "Следващ въпрос →"}
+                {index + 1 >= targetLen ? "Виж резултатите →" : "Следващ въпрос →"}
               </button>
             )}
           </>
@@ -266,7 +362,7 @@ function QuizContent() {
               </button>
             ) : (
               <button onClick={next} className="w-full py-4 rounded font-bold text-white" style={{ background: "var(--btn-gradient-wide)", boxShadow: "var(--accent-glow)" }}>
-                {index + 1 >= pool.length ? "Виж резултатите →" : "Следващ въпрос →"}
+                {index + 1 >= targetLen ? "Виж резултатите →" : "Следващ въпрос →"}
               </button>
             )}
           </>

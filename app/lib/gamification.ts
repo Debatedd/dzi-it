@@ -75,6 +75,18 @@ function prevDay(d: string): string {
   return dt.toISOString().slice(0, 10);
 }
 
+// Add flat bonus points (e.g. daily challenge). Returns newly unlocked reward indices.
+export function addBonusPoints(bonus: number): number[] {
+  const state = getState();
+  const oldPoints = state.points;
+  const newPoints = oldPoints + bonus;
+  saveState({ ...state, points: newPoints });
+  return REWARDS
+    .map((r, i) => ({ i, threshold: r.threshold }))
+    .filter(({ threshold }) => threshold > oldPoints && threshold <= newPoints)
+    .map(({ i }) => i);
+}
+
 export function awardPoints(correct: number): AwardResult {
   const state = getState();
   const t = todayStr();

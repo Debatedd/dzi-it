@@ -4,8 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import type { AnyQuestion, QuizAnswer } from "@/lib/types";
 import { isClosed } from "@/lib/types";
-import { awardPoints, REWARDS, type AwardResult } from "@/lib/gamification";
+import { awardPoints, addBonusPoints, REWARDS, type AwardResult } from "@/lib/gamification";
 import { recordAnswers } from "@/app/profile/actions";
+import { recordAnswerStats } from "@/lib/history";
+import { applyQuizToDaily, DAILY_BONUS, type DailyChallenge } from "@/lib/dailyChallenge";
 
 const TOPIC_LABELS: Record<string, string> = {
   "обработка-анализ": "Обработка и Анализ на Данни",
@@ -22,6 +24,7 @@ interface StoredResults {
 export default function ResultsPage() {
   const [data, setData]         = useState<StoredResults | null>(null);
   const [award, setAward]       = useState<AwardResult | null>(null);
+  const [daily, setDaily]       = useState<{ challenge: DailyChallenge; justCompleted: boolean } | null>(null);
   const scoredRef = useRef(false);
 
   useEffect(() => {
@@ -38,6 +41,12 @@ export default function ResultsPage() {
     setAward(awardPoints(correct));
     // Save per-question results to the account (no-op if not logged in).
     recordAnswers(parsed.answers.map((a) => ({ questionId: a.questionId, correct: a.correct })));
+    // Local answer history (weak spots + adaptive difficulty).
+    recordAnswerStats(parsed.answers.map((a) => ({ questionId: a.questionId, correct: a.correct })));
+    // Daily challenge progress; flat bonus on the run that completes it.
+    const d = applyQuizToDaily(parsed.answers, parsed.questions);
+    if (d.justCompleted) addBonusPoints(DAILY_BONUS);
+    setDaily({ challenge: d.challenge, justCompleted: d.justCompleted });
   }, []);
 
   if (!data) {
@@ -146,6 +155,28 @@ export default function ResultsPage() {
               <div style={{ color: "var(--muted)", fontSize: "0.72rem" }}>
                 {award.newStreak >= 2 ? "дни серия" : "серия"}
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* Daily challenge completed */}
+        {daily?.justCompleted && (
+          <div
+            className="glass rounded-2xl px-5 py-4 mb-6 flex items-center justify-between"
+            style={{ border: "1px solid var(--correct-border)" }}
+          >
+            <div>
+              <div className="font-semibold" style={{ color: "var(--correct-text)", fontSize: "0.95rem" }}>
+                Дневно предизвикателство изпълнено
+              </div>
+              <div style={{ color: "var(--muted)", fontSize: "0.78rem", marginTop: 2 }}>
+                {daily.challenge.label}
+              </div>
+            </div>
+            <div
+              style={{ fontFamily: "var(--font-ibm-mono), monospace", fontWeight: 700, fontSize: "1.2rem", color: "var(--correct-text)" }}
+            >
+              +{DAILY_BONUS}
             </div>
           </div>
         )}

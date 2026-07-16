@@ -143,6 +143,10 @@ export default async function ProfilePage() {
 
         {/* Quick links */}
         <div className="flex gap-3">
+          <Link href="/quiz/solo?mode=weak" className="flex-1 text-center rounded px-4 py-3"
+            style={{ background: "var(--input-bg)", border: "1px solid var(--border)", color: "var(--text)", textDecoration: "none", fontFamily: MONO, fontSize: "0.72rem", letterSpacing: "0.08em", textTransform: "uppercase", borderRadius: 4 }}>
+            Слаби места
+          </Link>
           <Link href="/quiz/my" className="flex-1 text-center rounded px-4 py-3"
             style={{ background: "var(--input-bg)", border: "1px solid var(--border)", color: "var(--text)", textDecoration: "none", fontFamily: MONO, fontSize: "0.72rem", letterSpacing: "0.08em", textTransform: "uppercase", borderRadius: 4 }}>
             Моите тестове

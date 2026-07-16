@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import DailyChallengeCard from "@/components/DailyChallengeCard";
 
 const SERIF = "var(--font-ibm-serif), Georgia, serif";
 const MONO = "var(--font-ibm-mono), monospace";
@@ -17,6 +18,7 @@ const MODES = [
   { label: "6 ВЪПР.", mode: "6",   desc: "4 + 2" },
   { label: "12 ВЪПР.", mode: "12",  desc: "8 + 4" },
   { label: "ДЗИ (25)", mode: "dzi", desc: "15 + 10" },
+  { label: "АДАПТ.", mode: "adaptive", desc: "12 въпроса — трудността се напасва към теб" },
 ];
 
 function ModeButtons({ slug }: { slug: string | null }) {
@@ -56,8 +58,29 @@ export default function PracticePage() {
       <p className="text-center mb-10" style={{ color: "var(--muted)", fontSize: "0.9rem" }}>
         Режим: <strong style={{ color: "var(--paper)" }}>6</strong> (4+2) ·{" "}
         <strong style={{ color: "var(--paper)" }}>12</strong> (8+4) ·{" "}
-        <strong style={{ color: "var(--paper)" }}>ДЗИ 25</strong> (15+10) — затворени + открити
+        <strong style={{ color: "var(--paper)" }}>ДЗИ 25</strong> (15+10) ·{" "}
+        <strong style={{ color: "var(--paper)" }}>АДАПТ.</strong> — трудността следва отговорите ти
       </p>
+
+      <div className="space-y-4 mb-4">
+        <DailyChallengeCard />
+      </div>
+
+      {/* Study tools */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+        <Link href="/flashcards" className="glass p-5 relative block transition-colors hover:bg-[rgba(236,230,216,0.04)]"
+          style={{ border: "1px solid var(--border)", borderRadius: 4, textDecoration: "none" }}>
+          <span className="absolute left-0 top-0 bottom-0" style={{ width: 3, background: "var(--accent-2-text)" }} />
+          <div style={{ fontFamily: SERIF, fontWeight: 600, color: "var(--paper)", fontSize: "1.05rem" }}>Флашкарти</div>
+          <div style={{ color: "var(--muted)", fontSize: "0.8rem", marginTop: 2 }}>Бързо повторение с карти — въпрос, обръщаш, отговор</div>
+        </Link>
+        <Link href="/quiz/solo?mode=weak" className="glass p-5 relative block transition-colors hover:bg-[rgba(236,230,216,0.04)]"
+          style={{ border: "1px solid var(--border)", borderRadius: 4, textDecoration: "none" }}>
+          <span className="absolute left-0 top-0 bottom-0" style={{ width: 3, background: "var(--red)" }} />
+          <div style={{ fontFamily: SERIF, fontWeight: 600, color: "var(--paper)", fontSize: "1.05rem" }}>Слаби места</div>
+          <div style={{ color: "var(--muted)", fontSize: "0.8rem", marginTop: 2 }}>Тест само от въпросите, които си грешил</div>
+        </Link>
+      </div>
 
       <div className="space-y-4">
         {/* General test */}
