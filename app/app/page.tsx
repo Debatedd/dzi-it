@@ -93,8 +93,8 @@ export default async function HomePage() {
         </h1>
 
         <p className="mt-7" style={{ color: "var(--muted)", fontSize: "clamp(1rem, 2.2vw, 1.15rem)", maxWidth: 520, lineHeight: 1.7 }}>
-          Практикувай с реални въпроси от матури, виж обяснения веднага и
-          проследи напредъка си по теми.
+          Практикувай с авторски въпроси във формата на ДЗИ, виж обяснения
+          веднага и проследи напредъка си по теми.
         </p>
 
         {/* ticket (points / streak) */}
