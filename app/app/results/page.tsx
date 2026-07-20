@@ -150,7 +150,7 @@ export default function ResultsPage() {
             </div>
             <div className="text-right">
               <div style={{ fontSize: "1.4rem", color: award.newStreak >= 2 ? "var(--streak-text)" : "var(--muted)" }}>
-                {award.newStreak >= 2 ? `🔥 ${award.newStreak}` : "—"}
+                {award.newStreak >= 2 ? award.newStreak : "—"}
               </div>
               <div style={{ color: "var(--muted)", fontSize: "0.72rem" }}>
                 {award.newStreak >= 2 ? "дни серия" : "серия"}
@@ -191,10 +191,10 @@ export default function ResultsPage() {
                 style={{ border: "1px solid var(--reward-border)", background: "var(--reward-bg)" }}
               >
                 <div className="font-semibold mb-1" style={{ color: "var(--reward-text)" }}>
-                  🏆 Отключен нов съвет!
+                  Отключен нов съвет
                 </div>
                 <div style={{ color: "var(--text)", fontSize: "0.9rem" }}>
-                  {REWARDS[i].icon} {REWARDS[i].tip}
+                  {REWARDS[i].tip}
                 </div>
               </div>
             ))}
@@ -290,7 +290,7 @@ export default function ResultsPage() {
             className="flex-1 text-center py-3.5 rounded-2xl font-semibold glass"
             style={{ color: "var(--text)", textDecoration: "none" }}
           >
-            🏆 Награди
+            Награди
           </Link>
         </div>
       </main>

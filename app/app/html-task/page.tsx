@@ -74,18 +74,18 @@ const TASKS: Task[] = [
             }}
           >
             <div style={{ ...box, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span>🖼 лого</span>
+              <span>лого (изобр.)</span>
               <span>Блок 2 (header) &mdash; навигация</span>
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
               <div style={box}>Блок 3<br />заглавие + текст</div>
-              <div style={box}>Блок 4<br />🖼 + заглавие</div>
+              <div style={box}>Блок 4<br />изобр. + заглавие</div>
             </div>
             <div style={{ ...box, padding: "8px 4px" }}>
               Блок 5 &mdash; заглавие и текст
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 4, marginTop: 6 }}>
                 {[6, 7, 8, 9].map((n) => (
-                  <div key={n} style={{ ...box, fontSize: "0.6rem" }}>{n}<br />🖼</div>
+                  <div key={n} style={{ ...box, fontSize: "0.6rem" }}>{n}<br />изобр.</div>
                 ))}
               </div>
             </div>
@@ -291,7 +291,7 @@ const TASKS: Task[] = [
               {[1, 2, 3].map((n) => (
                 <div key={n} style={{ ...wireBox, lineHeight: 1.5 }}>
                   Заглавие h4
-                  <br />🖼<br />текст<br />🔗
+                  <br />изобр.<br />текст<br />връзка
                 </div>
               ))}
             </div>
@@ -608,7 +608,7 @@ function TaskEditor({ task, onBack }: { task: Task; onBack: () => void }) {
                 </>
               )}
               <div className="mt-5 pt-4 text-xs" style={{ color: "var(--text)", borderTop: "1px solid var(--border)" }}>
-                <p className="font-semibold mb-2" style={{ color: "var(--accent)" }}>💡 Безплатни изображения (без теглене — само линк)</p>
+                <p className="font-semibold mb-2" style={{ color: "var(--accent)" }}>Безплатни изображения (без теглене — само линк)</p>
                 <p className="mb-2" style={{ color: "var(--muted)" }}>
                   Нямаш нужда от файловете от изпита. Сложи кой да е от тези линкове като{" "}
                   <code style={{ background: "var(--input-bg)", padding: "1px 5px", borderRadius: 4 }}>&lt;img src="..."&gt;</code>{" "}

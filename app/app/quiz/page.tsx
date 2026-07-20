@@ -22,7 +22,7 @@ export default async function QuizLandingPage() {
       </Link>
 
       <div className="text-center mb-10">
-        <h1 className="font-extrabold text-3xl mb-2">⚡ Quiz стаи</h1>
+        <h1 className="font-extrabold text-3xl mb-2">Quiz стаи</h1>
         <p className="text-sm mx-auto" style={{ color: "var(--muted)", maxWidth: 440 }}>
           Учителят прави тест и го споделя с код или линк. Учениците влизат само с име
           и решават в зададеното време.
